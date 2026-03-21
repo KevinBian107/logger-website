@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logger &mdash; AI-Powered Personal Productivity Tracking</title>
+  <meta name="description" content="Logger is a professional web-based personal productivity tracking application featuring real-time timers, analytics dashboards, AI-powered chat, and project progression visualization." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Table of Contents (sidebar, large screens) -->
+<nav class="toc-wrapper" aria-label="Table of Contents">
+  <div class="toc">
+    <h4>Contents</h4>
+    <a href="#overview" data-toc-link>Overview</a>
+    <a href="#motivation" data-toc-link>Motivation</a>
+    <a href="#features" data-toc-link>Features</a>
+    <a href="#architecture" data-toc-link>Architecture</a>
+    <a href="#data-model" data-toc-link>Data Model</a>
+    <a href="#ai-integration" data-toc-link>AI Integration</a>
+    <a href="#tech-stack" data-toc-link>Tech Stack</a>
+    <a href="#getting-started" data-toc-link>Getting Started</a>
+    <a href="#acknowledgments" data-toc-link>Acknowledgments</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <div class="hero-logo-text">
+      <span class="logo-text">log<span class="logo-dim">(</span>ger<span class="logo-dim">)</span></span>
+    </div>
+    <p class="subtitle">
+      A professional web-based personal productivity tracking application &mdash;
+      real-time timers, analytics dashboards, AI-powered chat, and project progression visualization.
+    </p>
+    <p class="author">
+      <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a> &middot;
+      <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a> &middot;
+      <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>
+    </p>
+
+    <div class="quick-links">
+      <a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Code
+      </a>
+      <a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 0A1.75 1.75 0 000 1.75v12.5C0 15.216.784 16 1.75 16h12.5A1.75 1.75 0 0016 14.25V1.75A1.75 1.75 0 0014.25 0H1.75zM1.5 1.75a.25.25 0 01.25-.25h12.5a.25.25 0 01.25.25v12.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V1.75zM8.25 3.5a.75.75 0 00-1.5 0V7H3.5a.75.75 0 000 1.5H6.75v3.5a.75.75 0 001.5 0V8.5h3.25a.75.75 0 000-1.5H8.25V3.5z"/></svg>
+        Previous Version
+      </a>
+      <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener" class="propel-link">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.878.392a1.75 1.75 0 00-1.756 0l-5.25 3.045A1.75 1.75 0 001 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 001.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514L8.878.392zM7.875 1.69a.25.25 0 01.25 0l4.63 2.685L8 7.133 3.245 4.375l4.63-2.685zM2.5 5.677l5 2.9v5.765l-4.63-2.685A.25.25 0 012.5 11.4V5.677zm6 8.665V8.577l5-2.9V11.4a.25.25 0 01-.13.216L8.5 14.342z"/></svg>
+        Built with Propel
+      </a>
+    </div>
+
+    <!-- Development Banner -->
+    <div class="dev-banner">
+      <strong>Under Active Development.</strong>
+      Logger is currently a local-only application. Cloud deployment and multi-user support are planned for future releases.
+    </div>
+  </header>
+
+  <!-- Overview -->
+  <section id="overview" class="fade-in">
+    <h2>Overview</h2>
+    <p>
+      Logger is a ground-up rebuild of <a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener">Chatable-Study-Database</a> &mdash; a Python/Jupyter-based study time analysis system with basic LLM chat. The previous version relied on manual Excel logging, Jupyter notebooks for visualization, and a RAG pipeline for querying history.
+    </p>
+    <p>
+      <strong>The problem:</strong> Manual time tracking in spreadsheets is tedious, error-prone, and disconnects the act of logging from the insight it's meant to produce. You end up with 26 CSV files spanning three years of data, but no easy way to see patterns, track project evolution, or ask questions about your own productivity.
+    </p>
+    <p>
+      <strong>Logger solves this</strong> by combining real-time timer-based logging with an analytics dashboard, AI-powered natural language querying, and a project progression timeline &mdash; all in a polished, professional web interface that makes the daily act of tracking feel effortless.
+    </p>
+  </section>
+
+  <!-- Motivation -->
+  <section id="motivation" class="fade-in">
+    <h2>Motivation</h2>
+    <p>
+      Productivity tracking shouldn't require a data science workflow. The original system worked &mdash; three years of continuous logging prove that &mdash; but each quarter required manual CSV creation, column formatting, and Jupyter notebook reruns just to see basic trends. Text descriptions were separated from time data. Category names drifted across quarters. Getting a simple answer like "how much time did I spend on research in 2024?" meant writing pandas queries.
+    </p>
+    <blockquote>
+      Logger turns passive data collection into an active feedback loop: log time with timers, see patterns instantly in dashboards, and ask questions in natural language. The goal is to make productivity tracking a tool you actually use daily, not a chore you maintain weekly.
+    </blockquote>
+    <p>
+      The project also serves as a case study in <strong>structured AI-assisted development</strong> using <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Propel</a> &mdash; a constraint framework for Claude Code that enforces investigation-first methodology, human-in-the-loop gates, and domain-specific auditing throughout the development process.
+    </p>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="fade-in">
+    <h2>Core Features</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-timer">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>Real-Time Timers</h3>
+        <p>Start, pause, and stop timers per category. Run multiple timers in parallel. Automatic rounding to the nearest minute. Add descriptions and locations on completion.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-analytics">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <h3>Analytics Dashboard</h3>
+        <p>Interactive charts powered by D3.js &mdash; daily area charts, category breakdowns, weekly heatmaps, and session comparisons. Filter by date range, session, or category.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-chat">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <h3>AI-Powered Chat</h3>
+        <p>Query your productivity history using natural language via Claude API. Ask "How much time did I spend on research in 2024?" and get factually grounded answers with manual approval for all LLM operations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-projects">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        </div>
+        <h3>Project Progression</h3>
+        <p>Visualize how projects evolve across academic sessions with vertical timelines, GitHub repo linking, and AI-generated session descriptions. Group by research, courses, personal projects.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-data">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+        </div>
+        <h3>Smart Data Management</h3>
+        <p>Session-based data model with category linking across quarters. Import legacy CSV data (26 files, Fall 2022&ndash;Summer 2025) with automatic BOM handling and category normalization.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon feature-icon-theme">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+        </div>
+        <h3>Professional UI</h3>
+        <p>Polished dark/light theme with a responsive sidebar layout. Built with SvelteKit and Tailwind CSS for a native-app feel. Designed for daily use, not a prototype aesthetic.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section id="architecture" class="fade-in">
+    <h2>Architecture</h2>
+    <p>
+      Logger follows a clean client-server architecture with a SvelteKit frontend communicating with a FastAPI backend over REST APIs. The backend manages all data persistence, CSV import logic, timer state, analytics aggregation, and Claude API calls.
+    </p>
+
+    <div class="arch-diagram">
+      <div class="arch-layer arch-frontend">
+        <div class="arch-label">Frontend (SvelteKit + Tailwind CSS)</div>
+        <div class="arch-items">
+          <span>Dashboard</span>
+          <span>Timer</span>
+          <span>Analytics</span>
+          <span>Chat</span>
+          <span>Projects</span>
+          <span>Data</span>
+          <span>Settings</span>
+        </div>
+      </div>
+      <div class="arch-arrow">REST API</div>
+      <div class="arch-layer arch-backend">
+        <div class="arch-label">Backend (FastAPI + Python)</div>
+        <div class="arch-items">
+          <span>Timer Service</span>
+          <span>Analytics Service</span>
+          <span>Chat Service</span>
+          <span>Import Service</span>
+          <span>Group Service</span>
+          <span>GitHub Service</span>
+        </div>
+      </div>
+      <div class="arch-arrow">SQLite / Claude API</div>
+      <div class="arch-layer arch-storage">
+        <div class="arch-label">Storage &amp; External</div>
+        <div class="arch-items">
+          <span>SQLite DB</span>
+          <span>Claude API</span>
+          <span>GitHub API</span>
+          <span>Legacy CSVs</span>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      The frontend is organized into seven pages matching the sidebar navigation, each with dedicated components and stores. The backend uses a service-layer pattern with routers for HTTP routing and services for business logic.
+    </p>
+  </section>
+
+  <!-- Data Model -->
+  <section id="data-model" class="fade-in">
+    <h2>Data Model</h2>
+    <p>
+      Logger's data model is session-centric. Each academic quarter (e.g., "Winter 2025") is a session containing categories, timer entries, manual entries, and daily observations. Categories are linked across sessions through <strong>category families</strong>, enabling project-level tracking over time.
+    </p>
+
+    <div class="data-model-grid">
+      <div class="model-card">
+        <h3>Sessions</h3>
+        <p>One per academic term. Holds year, season, date range. Only one session active at a time for timer-based logging.</p>
+      </div>
+      <div class="model-card">
+        <h3>Categories</h3>
+        <p>Per-session activity types (e.g., <code>salk_winter25</code>). Linked to families for cross-session tracking. Support display names and colors.</p>
+      </div>
+      <div class="model-card">
+        <h3>Category Families</h3>
+        <p>Group related categories across sessions: <code>training_*</code>, <code>salk_*</code>, <code>mpi_*</code>. Typed as research, course, personal, or recurring.</p>
+      </div>
+      <div class="model-card">
+        <h3>Timer Entries</h3>
+        <p>Real-time timer records with start/end timestamps, pause tracking, description, and location. Auto-rounded to nearest minute.</p>
+      </div>
+      <div class="model-card">
+        <h3>Manual Entries</h3>
+        <p>Retroactive time entries with date, minutes, category, description. Used for imported CSV data and manual logging.</p>
+      </div>
+      <div class="model-card">
+        <h3>Observations</h3>
+        <p>Daily aggregated totals per category. Computed from timer + manual entries. Powers the analytics dashboard and daily breakdown bars.</p>
+      </div>
+    </div>
+
+    <h3>Legacy Data</h3>
+    <p>
+      Logger imports 26 CSV files spanning Fall 2022 through Summer 2025, handling format variations (missing week/day columns in 2022, BOM characters, inconsistent column names in text CSVs) and normalizing category names with quarter suffixes into linked families.
+    </p>
+  </section>
+
+  <!-- AI Integration -->
+  <section id="ai-integration" class="fade-in">
+    <h2>AI Integration</h2>
+    <p>
+      Logger uses the Claude API for two features, both requiring <strong>explicit user approval</strong> in the UI before any LLM call is made:
+    </p>
+
+    <div class="ai-grid">
+      <div class="ai-card">
+        <h3>Natural Language Chat</h3>
+        <p>Ask questions about your productivity history in plain English. The chat service builds a context window from your data, sends it to Claude, and streams back factually grounded responses.</p>
+        <div class="ai-examples">
+          <code>"Summarize my 2024 productivity"</code>
+          <code>"How much time did I spend on training?"</code>
+          <code>"Compare Fall 2024 and Winter 2025"</code>
+          <code>"What are my top categories?"</code>
+        </div>
+      </div>
+      <div class="ai-card">
+        <h3>Project Descriptions</h3>
+        <p>AI-generated session summaries for the project progression timeline. Given a family's history and category data, Claude produces concise descriptions of what happened in each session.</p>
+      </div>
+    </div>
+
+    <div class="approval-note">
+      <strong>Manual Approval:</strong> All LLM operations surface a confirmation card in the UI before executing. No data leaves the app without the user explicitly clicking "Approve." This design keeps AI usage minimal, transparent, and under user control.
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section id="tech-stack" class="fade-in">
+    <h2>Tech Stack</h2>
+
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Frontend</td><td><strong>SvelteKit 2.x</strong></td><td>App shell, routing, compiled reactivity for real-time timers</td></tr>
+        <tr><td>Styling</td><td><strong>Tailwind CSS 4.x</strong></td><td>Utility-first CSS with dark/light theme support</td></tr>
+        <tr><td>Charting</td><td><strong>D3.js</strong></td><td>Daily area charts, category bars, heatmaps, session comparisons</td></tr>
+        <tr><td>Backend</td><td><strong>FastAPI</strong></td><td>REST API with Pydantic validation, async endpoints</td></tr>
+        <tr><td>Database</td><td><strong>SQLite</strong></td><td>Zero-config local storage with aiosqlite</td></tr>
+        <tr><td>LLM</td><td><strong>Claude API (Anthropic)</strong></td><td>Natural language chat and AI-generated descriptions</td></tr>
+        <tr><td>Python</td><td><strong>3.11+</strong></td><td>Backend runtime with uv for dependency management</td></tr>
+        <tr><td>Node.js</td><td><strong>20+</strong></td><td>Frontend runtime with pnpm</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Why These Choices</h3>
+    <div class="choices-grid">
+      <div class="choice-card">
+        <h4>SvelteKit over React/Next.js</h4>
+        <p>Compiled reactivity is ideal for real-time timer UIs. 40% less boilerplate for a solo developer.</p>
+      </div>
+      <div class="choice-card">
+        <h4>FastAPI over Express</h4>
+        <p>First-class Anthropic Python SDK. Python's csv/pandas libraries make CSV import trivial. Type-safe with Pydantic.</p>
+      </div>
+      <div class="choice-card">
+        <h4>SQLite over Postgres</h4>
+        <p>Single-user local app. Zero config. File-based backup. Can migrate to Postgres later if needed.</p>
+      </div>
+      <div class="choice-card">
+        <h4>D3.js for Charting</h4>
+        <p>Maximum control over visualization. Custom heatmaps, responsive area charts, and interactive category bars.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting Started -->
+  <section id="getting-started" class="fade-in">
+    <h2>Getting Started</h2>
+
+    <div class="install-steps">
+      <div class="install-step">
+        <div>
+          <p><strong>Clone the repository</strong></p>
+          <pre><code>git clone https://github.com/KevinBian107/logger.git
+cd logger</code></pre>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>Start the backend</strong></p>
+          <pre><code>cd backend
+uv venv && source .venv/bin/activate
+uv pip install -e .
+uvicorn logger.main:app --reload</code></pre>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>Start the frontend</strong></p>
+          <pre><code>cd frontend
+pnpm install
+pnpm dev</code></pre>
+          <p>Open <code>http://localhost:5173</code> in your browser.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>Import legacy data (optional)</strong></p>
+          <pre><code># Place CSV files in data/ directory
+# Use the Data page to import sessions</code></pre>
+          <p>Supports the <code>{year}_{quarter}_study.csv</code> and <code>{year}_{quarter}_text.csv</code> format.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pages Overview -->
+  <section id="pages" class="fade-in">
+    <h2>Application Pages</h2>
+    <p>Logger is organized into seven pages, each accessible from the persistent sidebar navigation.</p>
+
+    <table>
+      <thead>
+        <tr><th>Page</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Dashboard</strong></td><td>Today's summary &mdash; total time, entries, streak, active timers, quick start, and daily breakdown bar</td></tr>
+        <tr><td><strong>Timer</strong></td><td>Start/pause/stop timers per category, manual entry form, today's log</td></tr>
+        <tr><td><strong>Analytics</strong></td><td>Filterable charts: daily area chart, category bars, weekly heatmap, session comparison</td></tr>
+        <tr><td><strong>Chat</strong></td><td>AI-powered natural language interface with suggested queries, streaming responses, and approval cards</td></tr>
+        <tr><td><strong>Projects</strong></td><td>Project progression across sessions &mdash; group selector, vertical timelines, GitHub linking, AI descriptions</td></tr>
+        <tr><td><strong>Data</strong></td><td>Session management, CSV import with drag-and-drop, family management, bubble visualization</td></tr>
+        <tr><td><strong>Settings</strong></td><td>API key configuration, theme toggle, app preferences</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Acknowledgments -->
+  <section id="acknowledgments" class="fade-in">
+    <h2>Acknowledgments</h2>
+    <ul class="ack-list">
+      <li><a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener"><strong>Chatable-Study-Database</strong></a> &mdash; The original Python/Jupyter productivity tracking system that Logger rebuilds and extends.</li>
+      <li><a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener"><strong>Propel</strong></a> &mdash; Structured constraint framework for Claude Code used throughout Logger's development, enforcing investigation-first methodology and human-in-the-loop gates.</li>
+      <li><a href="https://github.com/KevinBian107/code-manual" target="_blank" rel="noopener"><strong>Code Manual</strong></a> &mdash; Documentation and methodology guides for AI-assisted development workflows.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>Logger is open source under the <a href="https://github.com/KevinBian107/logger/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+    <p>Built by <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>, <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>, and <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>.</p>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
