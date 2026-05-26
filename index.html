@@ -23,6 +23,7 @@
     <a href="#features" data-toc-link>Features</a>
     <a href="#hierarchy" data-toc-link>How it's organized</a>
     <a href="#data-to-insight" data-toc-link>Data &rarr; Insight</a>
+    <a href="under-the-hood.html" data-toc-link>Under the hood &#8599;</a>
     <a href="#getting-started" data-toc-link>Try it</a>
     <a href="#acknowledgments" data-toc-link>Credits</a>
   </div>
@@ -59,6 +60,10 @@
         <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 1a.75.75 0 00-1.5 0v7.69L4.78 6.22a.75.75 0 10-1.06 1.06l3.75 3.75c.3.3.77.3 1.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.69V1zM2.75 13a.75.75 0 000 1.5h10.5a.75.75 0 000-1.5H2.75z"/></svg>
         Try it locally
       </a>
+      <a href="under-the-hood.html">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5C2 2.12 4.69 1 8 1s6 1.12 6 2.5v9c0 1.38-2.69 2.5-6 2.5s-6-1.12-6-2.5v-9zm6 5c2.97 0 5.4-.79 5.4-2.5S10.97 4 8 4s-5.4.79-5.4 2c0 1.71 2.43 2.5 5.4 2.5z"/></svg>
+        Under the hood
+      </a>
     </div>
 
     <div class="dev-banner">
@@ -94,41 +99,138 @@
     </p>
 
     <!--
-      DEMO VIDEO PLACEHOLDER
-
-      To record this, screen-capture a ~90-120s walkthrough hitting these beats:
-
-        0:00 - Open dashboard. Show greeting, active-session pill, stat cards, "Quick Start".
-        0:10 - Click "New Session" on the Data page. Pick year/season. Create.
-        0:20 - On the new session, add a category (e.g. "Research"). Show family auto-link.
-        0:30 - Back to dashboard. Quick-start a timer. Show it running.
-        0:45 - Pause, resume, stop. On stop, fill out the description + location.
-        0:55 - Add a Manual Entry from the Timer page (for time you forgot to log).
-        1:05 - Open Analytics. Toggle time-scale (Year / Month / Week). Show heatmap.
-        1:25 - Open Chat. Approve the API call. Ask "How much research time this quarter?".
-        1:45 - Open Projects. Show how families progress across sessions.
-        2:00 - End on the dashboard with the active streak.
-
-      Save as logger-demo.mp4 (H.264, 1080p, ~30 MB max) and place in the website/ folder.
-      Then replace the placeholder below with the <video> tag commented out below it.
+      Animated HTML demo (not a real screen recording — a CSS-driven mockup that
+      loops through the same beats from the workflow shot list). If you record a
+      real screen capture later, drop logger-demo.mp4 here and swap this block
+      for a <video> tag.
     -->
-    <div class="video-placeholder">
-      <div class="video-placeholder-inner">
-        <svg class="video-placeholder-icon" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M8 5v14l11-7L8 5z"/>
-        </svg>
-        <p><strong>Demo video coming soon.</strong></p>
-        <p class="video-placeholder-hint">Until then, scroll the workflow below or
-          <a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">try it locally</a>.</p>
+    <div class="demo-player" aria-label="log(ger) feature demo">
+      <!-- Faux browser/window chrome -->
+      <div class="demo-chrome">
+        <span class="demo-dot demo-dot-red"></span>
+        <span class="demo-dot demo-dot-yellow"></span>
+        <span class="demo-dot demo-dot-green"></span>
+        <span class="demo-chrome-title">log(ger) — Spring 2026</span>
+      </div>
+
+      <!-- Stacked scenes; CSS keyframes fade between them -->
+      <div class="demo-stage">
+        <!-- Scene 1: Dashboard with running timer -->
+        <div class="demo-scene demo-scene-1">
+          <div class="demo-header">
+            <div>
+              <div class="demo-greeting">Good afternoon</div>
+              <div class="demo-date">Monday · May 25</div>
+            </div>
+            <div class="demo-session-pill">
+              <span class="demo-session-dot"></span>
+              Spring 2026 · active
+            </div>
+          </div>
+          <div class="demo-statcards">
+            <div class="demo-stat">
+              <div class="demo-stat-label">Today's Total</div>
+              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="245" data-suffix="m">0m</span></div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-label">Entries Today</div>
+              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="4" data-suffix="">0</span></div>
+            </div>
+            <div class="demo-stat demo-stat-accent">
+              <div class="demo-stat-label">Current Streak</div>
+              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="14" data-suffix="d">0d</span></div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-label">Quick Start</div>
+              <div class="demo-quick">
+                <span class="demo-quick-cat">Salk Research</span>
+                <span class="demo-play-btn">▶</span>
+              </div>
+            </div>
+          </div>
+          <div class="demo-timer">
+            <span class="demo-timer-dot"></span>
+            <span class="demo-timer-label">Salk Research</span>
+            <span class="demo-timer-clock">00:14:32</span>
+          </div>
+        </div>
+
+        <!-- Scene 2: Analytics chart drawing in -->
+        <div class="demo-scene demo-scene-2">
+          <div class="demo-section-title">Analytics · this quarter</div>
+          <svg class="demo-chart" viewBox="0 0 600 220" preserveAspectRatio="none">
+            <!-- Stacked area chart, four bands -->
+            <path class="demo-area demo-area-4" d="M0 220 L0 130 C100 110 200 90 300 80 C400 70 500 75 600 70 L600 220 Z" />
+            <path class="demo-area demo-area-3" d="M0 220 L0 155 C100 145 200 125 300 115 C400 110 500 105 600 100 L600 220 Z" />
+            <path class="demo-area demo-area-2" d="M0 220 L0 180 C100 170 200 160 300 150 C400 145 500 140 600 135 L600 220 Z" />
+            <path class="demo-area demo-area-1" d="M0 220 L0 200 C100 195 200 190 300 185 C400 180 500 175 600 170 L600 220 Z" />
+            <!-- Heatmap squares above (weekly heatmap suggestion) -->
+            <g class="demo-heatmap" transform="translate(20, 12)">
+              <!-- 4 rows x 13 cols -->
+            </g>
+          </svg>
+          <div class="demo-legend">
+            <span class="demo-leg-chip" style="--c:#3B82F6">Salk</span>
+            <span class="demo-leg-chip" style="--c:#A855F7">COGS</span>
+            <span class="demo-leg-chip" style="--c:#F59E0B">PP</span>
+            <span class="demo-leg-chip" style="--c:#EF4444">Training</span>
+          </div>
+        </div>
+
+        <!-- Scene 3: Group → Family → Category hierarchy with bubble pop-in -->
+        <div class="demo-scene demo-scene-3">
+          <div class="demo-section-title">Group → Family → Category</div>
+          <div class="demo-bubbles">
+            <div class="demo-bubble demo-bubble-research">
+              <span class="demo-bubble-label">Research</span>
+              <div class="demo-bubble-inner demo-bubble-inner-1"><span>Salk</span></div>
+              <div class="demo-bubble-inner demo-bubble-inner-2"><span>MPI</span></div>
+              <div class="demo-bubble-inner demo-bubble-inner-3"><span>SWL</span></div>
+            </div>
+            <div class="demo-bubble demo-bubble-courses">
+              <span class="demo-bubble-label">Courses</span>
+              <div class="demo-bubble-inner demo-bubble-inner-4"><span>COGS</span></div>
+              <div class="demo-bubble-inner demo-bubble-inner-5"><span>DSC</span></div>
+            </div>
+            <div class="demo-bubble demo-bubble-training">
+              <span class="demo-bubble-label">Training</span>
+              <div class="demo-bubble-inner demo-bubble-inner-6"><span>Training</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 4: Chat — user query streams in, then assistant answer -->
+        <div class="demo-scene demo-scene-4">
+          <div class="demo-section-title">Ask your own data</div>
+          <div class="demo-chat">
+            <div class="demo-msg demo-msg-user">
+              <div class="demo-msg-bubble">How much research time this quarter?</div>
+            </div>
+            <div class="demo-msg demo-msg-assistant">
+              <div class="demo-msg-bubble">
+                <span class="demo-typing">In Spring 2026 you've logged <strong>52h 15m</strong> of research — 41% on Salk lab work and 32% on TopoMIMIC. Peak day: April 22 with 6h 40m.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress strip across all scenes -->
+      <div class="demo-progress">
+        <div class="demo-progress-bar"></div>
+        <div class="demo-progress-ticks">
+          <span class="demo-tick demo-tick-1">Dashboard</span>
+          <span class="demo-tick demo-tick-2">Analytics</span>
+          <span class="demo-tick demo-tick-3">Hierarchy</span>
+          <span class="demo-tick demo-tick-4">Chat</span>
+        </div>
       </div>
     </div>
 
-    <!--
-    <video controls preload="metadata" poster="demo-poster.jpg" class="video-frame">
-      <source src="logger-demo.mp4" type="video/mp4" />
-      Your browser doesn't support HTML5 video.
-    </video>
-    -->
+    <p class="demo-fineprint">
+      The clip above is an in-page mockup, not a real screen recording. The actual app
+      looks the same — <a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">clone the repo</a> and run it locally to see your own data flowing through these screens.
+    </p>
   </section>
 
   <!-- Workflow -->
@@ -320,6 +422,7 @@
       cuts of it.
     </p>
   </section>
+
 
   <!-- Getting Started -->
   <section id="getting-started" class="fade-in">
