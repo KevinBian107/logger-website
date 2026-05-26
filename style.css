@@ -2402,3 +2402,134 @@ footer a:hover {
   .anim-value-old, .anim-text-old, .anim-counter-old, .anim-dot-old { display: none; }
   .anim-value-new, .anim-text-new, .anim-counter-new, .anim-dot-new { position: static; }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Full SQL-style schema rendering (under-the-hood page)
+   Every table shown as a card with column rows + PK/FK/UQ/IDX badges.
+   ────────────────────────────────────────────────────────────── */
+
+.schema-legend-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.schema-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.schema-tbl {
+  background: var(--color-card, #fff);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.schema-tbl-name {
+  padding: 0.55rem 0.85rem;
+  font-family: 'Noto Sans Mono', monospace;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--accent-fg, #1f2937);
+  background: var(--accent-bg, rgba(99, 102, 241, 0.06));
+  border-bottom: 1px solid var(--color-border);
+  letter-spacing: 0.01em;
+}
+
+/* Per-table-family tint (matches the schema-at-a-glance diagram colors). */
+.schema-tbl-group     { --accent-fg: #4338ca; --accent-bg: rgba(99, 102, 241, 0.1); }
+.schema-tbl-family    { --accent-fg: #be185d; --accent-bg: rgba(236, 72, 153, 0.1); }
+.schema-tbl-category  { --accent-fg: #b45309; --accent-bg: rgba(245, 158, 11, 0.1); }
+.schema-tbl-entry     { --accent-fg: #047857; --accent-bg: rgba(16, 185, 129, 0.1); }
+.schema-tbl-aggregate { --accent-fg: #6d28d9; --accent-bg: rgba(168, 85, 247, 0.1); }
+.schema-tbl-aux       { --accent-fg: #475569; --accent-bg: rgba(148, 163, 184, 0.12); }
+
+.schema-tbl-cols {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+  font-family: 'Noto Sans Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.schema-col {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  flex-wrap: wrap;
+}
+
+.schema-col:last-child {
+  border-bottom: none;
+}
+
+.schema-col-fk {
+  background: rgba(99, 102, 241, 0.025);
+}
+
+.schema-col-name {
+  font-weight: 600;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.schema-col-type {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.schema-col-ref {
+  font-size: 0.7rem;
+  color: #4338ca;
+  font-weight: 600;
+  margin-left: 0.15rem;
+}
+
+.schema-col-note {
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  font-style: italic;
+  font-family: 'Noto Sans', sans-serif;
+  margin-left: auto;
+  text-align: right;
+}
+
+.schema-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 16px;
+  padding: 0 0.35em;
+  border-radius: 3px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-family: 'Noto Sans Mono', monospace;
+  flex-shrink: 0;
+}
+
+.schema-tag-pk  { background: rgba(245, 158, 11, 0.2);  color: #b45309; }
+.schema-tag-fk  { background: rgba(99, 102, 241, 0.2);  color: #4338ca; }
+.schema-tag-uq  { background: rgba(236, 72, 153, 0.18); color: #be185d; }
+.schema-tag-idx { background: rgba(14, 165, 233, 0.18); color: #0369a1; }
+
+@media (max-width: 760px) {
+  .schema-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .schema-col {
+    gap: 0.35rem;
+  }
+}

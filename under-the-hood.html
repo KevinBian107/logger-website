@@ -82,6 +82,210 @@
     </div>
   </section>
 
+  <!-- ── Full schema (SQL-style) ─────────────────────────── -->
+  <section id="schema-detail" class="fade-in">
+    <h2>Full schema</h2>
+    <p>
+      Every table, every column, with types and key relationships annotated.
+      <span class="schema-legend-inline">
+        <span class="schema-tag schema-tag-pk">PK</span> primary key &middot;
+        <span class="schema-tag schema-tag-fk">FK</span> foreign key &middot;
+        <span class="schema-tag schema-tag-uq">UQ</span> unique &middot;
+        <span class="schema-tag schema-tag-idx">IDX</span> indexed
+      </span>
+    </p>
+
+    <div class="schema-detail-grid">
+
+      <!-- category_groups -->
+      <article class="schema-tbl schema-tbl-group">
+        <header class="schema-tbl-name">category_groups</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">color</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">DEFAULT 0</span></div>
+          <div class="schema-col"><span class="schema-col-name">is_system</span><span class="schema-col-type">BOOLEAN</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- category_families -->
+      <article class="schema-tbl schema-tbl-family">
+        <header class="schema-tbl-name">category_families</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">color</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">family_type</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">legacy</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">group_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_groups.id</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- family_match_rules -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">family_match_rules</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(match_type, pattern)">UQ</span><span class="schema-col-name">match_type</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">"exact" | "prefix"</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">pattern</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">lowercased</span></div>
+          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- sessions -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">sessions</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(year, season)">UQ</span><span class="schema-col-name">year</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">season</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">label</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">start_date</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">end_date</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">is_active</span><span class="schema-col-type">BOOLEAN</span></div>
+          <div class="schema-col"><span class="schema-col-name">source_file</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- categories -->
+      <article class="schema-tbl schema-tbl-category">
+        <header class="schema-tbl-name">categories</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(session_id, name)">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">SET NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- daily_records -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">daily_records</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(session_id, date)">UQ</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">day_of_week</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">week_number</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-col-name">total_minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- observations -->
+      <article class="schema-tbl schema-tbl-aggregate">
+        <header class="schema-tbl-name">observations</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-uq" title="UNIQUE(daily_record_id, category_id)">UQ</span><span class="schema-col-name">daily_record_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; daily_records.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-col-name">minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">source</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">timer | manual | import</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- timer_entries -->
+      <article class="schema-tbl schema-tbl-entry">
+        <header class="schema-tbl-name">timer_entries</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">start_time</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL · ISO 8601</span></div>
+          <div class="schema-col"><span class="schema-col-name">end_time</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">pause_start</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">total_paused_seconds</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-col-name">duration_minutes</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-idx" title="partial IDX where is_active=1">IDX</span><span class="schema-col-name">is_active</span><span class="schema-col-type">BOOLEAN</span></div>
+          <div class="schema-col"><span class="schema-col-name">is_paused</span><span class="schema-col-type">BOOLEAN</span></div>
+          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">updated_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- manual_entries -->
+      <article class="schema-tbl schema-tbl-entry">
+        <header class="schema-tbl-name">manual_entries</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">duration_minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- text_entries -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">text_entries</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">notes</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">study_materials</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- settings -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">settings</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">key</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">value</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL · API key obfuscated</span></div>
+          <div class="schema-col"><span class="schema-col-name">updated_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- chat_messages -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">chat_messages</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col"><span class="schema-col-name">role</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">"user" | "assistant"</span></div>
+          <div class="schema-col"><span class="schema-col-name">content</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">metadata</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">JSON</span></div>
+          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+      <!-- ai_descriptions -->
+      <article class="schema-tbl schema-tbl-aux">
+        <header class="schema-tbl-name">ai_descriptions</header>
+        <div class="schema-tbl-cols">
+          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-uq" title="UNIQUE(family_id, session_id)">UQ</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
+          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
+          <div class="schema-col"><span class="schema-col-name">model_used</span><span class="schema-col-type">TEXT</span></div>
+          <div class="schema-col"><span class="schema-col-name">generated_at</span><span class="schema-col-type">TEXT</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
   <!-- ── Animated ops ──────────────────────────────────── -->
   <section id="operations" class="fade-in">
     <h2>Watch the database change</h2>
