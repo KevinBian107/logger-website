@@ -427,12 +427,43 @@
 
   <!-- Getting Started -->
   <section id="getting-started" class="fade-in">
-    <h2>Run it on your Mac</h2>
+    <h2>Run it locally</h2>
     <p>
-      log(ger) is local-first. The recommended way to use it is the native Mac app
-      &mdash; built locally from source, then double-clicked like any other app. The
-      database lives in <code>~/Library/Application&nbsp;Support/Logger/</code> and
-      stays on your machine.
+      log(ger) runs in two flavors — pick whichever fits. Both use the same code and
+      the same on-disk database; the only differences are how the UI is served and
+      whether you get a real <code>.app</code> in your Dock.
+    </p>
+
+    <div class="run-modes">
+      <div class="run-mode run-mode-app">
+        <div class="run-mode-tag">Recommended</div>
+        <h3>🖥️ Mac app</h3>
+        <p>Native window via WKWebView, no terminals after the build, DB at
+          <code>~/Library/Application&nbsp;Support/Logger/</code>. Double-click to launch.
+        </p>
+        <ul class="run-mode-bullets">
+          <li>Best for using the tool day-to-day.</li>
+          <li>One-time build (~30s), then <code>open dist/Logger.app</code>.</li>
+          <li>FastAPI + SvelteKit bundled together on one ephemeral port.</li>
+        </ul>
+      </div>
+      <div class="run-mode run-mode-dev">
+        <div class="run-mode-tag">For hackers</div>
+        <h3>🌐 Browser dev mode</h3>
+        <p>Two terminals with hot-reload — backend on <code>:8000</code>, Vite on
+          <code>:5173</code>. DB at <code>./logger.db</code> in the repo (separate from the app's data).
+        </p>
+        <ul class="run-mode-bullets">
+          <li>Best for tweaking the code (HMR on Svelte + Python).</li>
+          <li>Open <a href="#dev-setup">http://localhost:5173</a> in your browser, not the backend port.</li>
+          <li>No PyInstaller build needed.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Build the Mac app</h3>
+    <p>
+      Recommended path. Builds from source on your own machine, no external download.
     </p>
 
     <div class="install-steps">
@@ -481,21 +512,50 @@ uv run --project backend python scripts/build_macapp.py</code></pre>
       Drop the pair onto the Data tab's <em>Import</em> dropzone.
     </p>
 
-    <details class="dev-path">
-      <summary>Hacking on the code? Use dev mode instead</summary>
-      <p>
-        Two terminals with hot-reload. Backend on <code>:8000</code>, frontend on <code>:5173</code>.
-        The dev path uses its own DB at <code>./logger.db</code> in the repo (separate from the packaged app's data).
-      </p>
-      <pre><code># Terminal 1
-cd backend && uv run uvicorn logger.main:app --reload --port 8000
+    <h3 id="dev-setup">Or: run in the browser (dev mode)</h3>
+    <p>
+      Pick this path if you're hacking on the code. You skip the PyInstaller build
+      entirely &mdash; the backend runs in uvicorn's reload mode and Vite serves the SvelteKit
+      frontend with HMR. Two terminals, both with live-reload.
+    </p>
 
-# Terminal 2
-cd frontend && pnpm dev
+    <div class="install-steps">
+      <div class="install-step">
+        <div>
+          <p><strong>Terminal 1 &mdash; backend on :8000</strong></p>
+          <pre><code>cd backend
+uv sync
+uv run uvicorn logger.main:app --reload --port 8000</code></pre>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>Terminal 2 &mdash; frontend on :5173</strong></p>
+          <pre><code>cd frontend
+pnpm install
+pnpm dev</code></pre>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>Open the UI</strong></p>
+          <pre><code>open http://localhost:5173</code></pre>
+          <p>
+            Open <strong>:5173</strong> (the frontend), not <strong>:8000</strong> (the backend &mdash; that one
+            returns 404 on <code>/</code> because it only serves <code>/api/*</code>). The Vite dev server
+            proxies API calls to the backend automatically.
+          </p>
+        </div>
+      </div>
+    </div>
 
-# Browse:
-open http://localhost:5173</code></pre>
-    </details>
+    <p class="getting-started-aside">
+      <strong>Two databases.</strong> Dev mode reads/writes <code>./logger.db</code> in your
+      repo checkout; the packaged Mac app reads/writes
+      <code>~/Library/Application&nbsp;Support/Logger/logger.db</code>. They're independent.
+      Use <em>Settings → Database → Download current</em> in one mode and
+      <em>Choose .db file</em> in the other to copy data between them.
+    </p>
 
     <p class="built-with-note">
       Built with SvelteKit, FastAPI, SQLite, D3, PyWebView, and the Claude API.
