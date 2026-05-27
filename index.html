@@ -66,8 +66,10 @@
     </div>
 
     <div class="dev-banner">
-      <strong>Still hand-crafted.</strong>
-      log(ger) is a local-only app right now. A one-click Mac build is on the way.
+      <strong>Local-first &middot; Mac native.</strong>
+      Runs as a real <code>.app</code> on your machine &mdash; your database stays in
+      <code>~/Library/Application&nbsp;Support/Logger/</code>. No cloud, no accounts.
+      <a href="#getting-started">Build &amp; launch instructions &darr;</a>
     </div>
   </header>
 
@@ -425,49 +427,79 @@
 
   <!-- Getting Started -->
   <section id="getting-started" class="fade-in">
-    <h2>Try it locally</h2>
+    <h2>Run it on your Mac</h2>
     <p>
-      log(ger) ships as a small web app you run on your own machine. A native Mac build is in
-      progress. For now:
+      log(ger) is local-first. The recommended way to use it is the native Mac app
+      &mdash; built locally from source, then double-clicked like any other app. The
+      database lives in <code>~/Library/Application&nbsp;Support/Logger/</code> and
+      stays on your machine.
     </p>
 
     <div class="install-steps">
       <div class="install-step">
         <div>
-          <p><strong>Clone</strong></p>
+          <p><strong>1. One-time prerequisites</strong></p>
+          <pre><code>brew install uv pnpm node@22</code></pre>
+          <p>uv (Python), pnpm (Node), Node 22+.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div>
+          <p><strong>2. Clone &amp; install deps</strong></p>
           <pre><code>git clone https://github.com/KevinBian107/logger.git
-cd logger</code></pre>
+cd logger
+uv sync --extra macapp
+pnpm --dir frontend install</code></pre>
+          <p>The <code>macapp</code> extra adds <code>pywebview</code> + PyInstaller for the build.</p>
         </div>
       </div>
       <div class="install-step">
         <div>
-          <p><strong>Backend (FastAPI, port 8000)</strong></p>
-          <pre><code>cd backend
-uv sync
-uv run uvicorn logger.main:app --reload --port 8000</code></pre>
+          <p><strong>3. Build the app bundle</strong></p>
+          <pre><code>pnpm --dir frontend build
+uv run --project backend python scripts/build_macapp.py</code></pre>
+          <p>Output: <code>dist/Logger.app</code> (~65 MB, includes the FastAPI backend + static SvelteKit frontend + a WKWebView shell).</p>
         </div>
       </div>
       <div class="install-step">
         <div>
-          <p><strong>Frontend (SvelteKit, port 5173)</strong></p>
-          <pre><code>cd frontend
-pnpm install
-pnpm dev</code></pre>
-          <p>Open <code>http://localhost:5173</code>.</p>
-        </div>
-      </div>
-      <div class="install-step">
-        <div>
-          <p><strong>Already have CSVs?</strong></p>
-          <pre><code># Drop them into data/ following the naming
-# {year}_{season}_study.csv + {year}_{season}_text.csv
-# then use the Data page to import.</code></pre>
+          <p><strong>4. Launch</strong></p>
+          <pre><code>open dist/Logger.app</code></pre>
+          <p>If Gatekeeper objects on first launch:</p>
+          <pre><code>xattr -dr com.apple.quarantine dist/Logger.app</code></pre>
+          <p>Drag the app to <code>/Applications</code> if you'd like it permanent.</p>
         </div>
       </div>
     </div>
 
+    <p class="getting-started-aside">
+      <strong>First-launch flow.</strong>
+      DB is empty on first run. On the <em>Data</em> tab, create a new session
+      (pick a year + season). Add a few categories. Hit play on the dashboard's
+      Quick Start to begin logging. Optional: paste an Anthropic API key in
+      <em>Settings</em> to unlock the AI chat assistant. Have old CSV data?
+      Drop the pair onto the Data tab's <em>Import</em> dropzone.
+    </p>
+
+    <details class="dev-path">
+      <summary>Hacking on the code? Use dev mode instead</summary>
+      <p>
+        Two terminals with hot-reload. Backend on <code>:8000</code>, frontend on <code>:5173</code>.
+        The dev path uses its own DB at <code>./logger.db</code> in the repo (separate from the packaged app's data).
+      </p>
+      <pre><code># Terminal 1
+cd backend && uv run uvicorn logger.main:app --reload --port 8000
+
+# Terminal 2
+cd frontend && pnpm dev
+
+# Browse:
+open http://localhost:5173</code></pre>
+    </details>
+
     <p class="built-with-note">
-      Built with SvelteKit, FastAPI, SQLite, D3, and the Claude API. Development was driven by
+      Built with SvelteKit, FastAPI, SQLite, D3, PyWebView, and the Claude API.
+      Development was driven by
       <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Propel</a> &mdash;
       a structured workflow for AI-assisted coding.
     </p>
