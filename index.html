@@ -448,9 +448,9 @@
           <p><strong>2. Clone &amp; install deps</strong></p>
           <pre><code>git clone https://github.com/KevinBian107/logger.git
 cd logger
-uv sync --extra macapp
+uv sync --project backend --extra macapp
 pnpm --dir frontend install</code></pre>
-          <p>The <code>macapp</code> extra adds <code>pywebview</code> + PyInstaller for the build.</p>
+          <p>The <code>macapp</code> extra adds <code>pywebview</code> + PyInstaller. The <code>--project backend</code> flag tells uv where <code>pyproject.toml</code> lives.</p>
         </div>
       </div>
       <div class="install-step">
