@@ -470,8 +470,14 @@
       <div class="install-step">
         <div>
           <p><strong>1. One-time prerequisites</strong></p>
-          <pre><code>brew install uv pnpm node@22</code></pre>
-          <p>uv (Python), pnpm (Node), Node 22+.</p>
+          <pre><code>brew install uv pnpm node@22
+brew unlink node 2>/dev/null
+brew link --overwrite --force node@22</code></pre>
+          <p>
+            uv (Python), pnpm (Node), <strong>Node 22.13+</strong> &mdash; older Node will fail with
+            <code>ERR_UNKNOWN_BUILTIN_MODULE: node:sqlite</code> on <code>pnpm install</code>.
+            The <code>brew link</code> step ensures <code>node --version</code> resolves to 22.
+          </p>
         </div>
       </div>
       <div class="install-step">
