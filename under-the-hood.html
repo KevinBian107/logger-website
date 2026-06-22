@@ -4,610 +4,246 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>log(ger) &mdash; Under the hood</title>
-  <meta name="description" content="Live animated tour of log(ger)'s SQLite database: rows appearing, values updating, and aggregates rebalancing as each operation runs." />
+  <meta name="description" content="How log(ger) stores your time: one local SQLite file, a four-level hierarchy, per-table schema, and aggregates that rebalance transactionally with every write, edit, and delete." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="under-the-hood.css" />
 </head>
 <body>
 
-<main class="container">
+<main>
 
-  <header class="subpage-header">
-    <a href="index.html" class="back-link">
-      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 3.5L7 8l4.5 4.5-1 1L5 8l5.5-5.5z"/></svg>
-      Back to log(ger)
-    </a>
-    <h1>Under the hood</h1>
-    <p class="subpage-subtitle">
-      A visual tour of log(ger)&rsquo;s SQLite database. Each animation below shows
-      <em>real</em> table rows appearing, values flashing, and aggregates rebalancing
-      as the corresponding operation runs in the app. Everything is local on disk &mdash;
-      no servers, no sync.
-    </p>
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="uth-header">
+    <div class="container">
+      <a href="index.html" class="back-link reveal">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.5 3.5L7 8l4.5 4.5-1 1L5 8l5.5-5.5z"/></svg>
+        log<span class="dim">(</span>ger<span class="dim">)</span>
+      </a>
+      <h1 class="reveal">Under the hood</h1>
+      <p class="uth-sub reveal">
+        No server, no sync &mdash; log(ger) is one SQLite file on your disk. Here is how your
+        time is <em>shaped</em>, how every write <em>rolls up</em>, and how the app reads it all
+        back fast. Everything below is the real schema.
+      </p>
+      <p class="uth-path reveal"><code>~/Library/Application&nbsp;Support/Logger/logger.db</code> &middot; <code>./logger.db</code> in dev</p>
+    </div>
   </header>
 
-  <!-- ── Schema diagram ──────────────────────────────────── -->
-  <section id="schema" class="fade-in">
-    <h2>The schema, at a glance</h2>
-    <p>
-      One SQLite file: <code>~/Library/Application&nbsp;Support/Logger/logger.db</code>
-      (packaged) or <code>./logger.db</code> (dev). Four tiers in the core hierarchy
-      and a few helpers around them.
-    </p>
-
-    <div class="schema-diagram">
-      <div class="schema-tier schema-tier-core">
-        <div class="schema-tier-label">Core hierarchy</div>
-        <div class="schema-row">
-          <div class="schema-box schema-box-group schema-pop" style="--pop-delay: 0s">
-            <div class="schema-box-name">category_groups</div>
-            <div class="schema-box-desc">Research &middot; Training &middot; Personal &middot; Courses</div>
-            <ul class="schema-box-fields"><li>id, name, display_name</li><li>color, position, is_system</li></ul>
-          </div>
-          <div class="schema-arrow schema-pop" style="--pop-delay: 0.15s">1<span>:</span>N</div>
-          <div class="schema-box schema-box-family schema-pop" style="--pop-delay: 0.3s">
-            <div class="schema-box-name">category_families</div>
-            <div class="schema-box-desc">Salk &middot; MPI &middot; COGS &middot; CSE&hellip;</div>
-            <ul class="schema-box-fields"><li>id, name, display_name, color</li><li>group_id &rarr; category_groups</li></ul>
-          </div>
-          <div class="schema-arrow schema-pop" style="--pop-delay: 0.45s">1<span>:</span>N</div>
-          <div class="schema-box schema-box-category schema-pop" style="--pop-delay: 0.6s">
-            <div class="schema-box-name">categories</div>
-            <div class="schema-box-desc">Per-session (e.g. &ldquo;Salk&rdquo; in Spring 2026)</div>
-            <ul class="schema-box-fields"><li>id, name, display_name</li><li>session_id, family_id, position</li></ul>
-          </div>
-          <div class="schema-arrow schema-pop" style="--pop-delay: 0.75s">1<span>:</span>N</div>
-          <div class="schema-box schema-box-entry schema-pop" style="--pop-delay: 0.9s">
-            <div class="schema-box-name">timer_entries<br/>manual_entries</div>
-            <div class="schema-box-desc">The actual minutes logged</div>
-            <ul class="schema-box-fields"><li>id, date, duration_minutes</li><li>category_id, description, location</li></ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="schema-tier schema-tier-aux">
-        <div class="schema-tier-label">Auxiliary</div>
-        <div class="schema-row schema-row-aux">
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.1s"><div class="schema-aux-name">sessions</div><div class="schema-aux-desc">One per academic quarter or work cycle.</div></div>
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.2s"><div class="schema-aux-name">observations</div><div class="schema-aux-desc">Per-date-per-category aggregate totals. Updated transactionally with every entry write.</div></div>
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.3s"><div class="schema-aux-name">text_entries</div><div class="schema-aux-desc">Free-form daily narrative.</div></div>
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.4s"><div class="schema-aux-name">family_match_rules</div><div class="schema-aux-desc">Auto-link rules. <code>exact</code> + <code>prefix</code>.</div></div>
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.5s"><div class="schema-aux-name">settings</div><div class="schema-aux-desc">API key, GitHub token, theme.</div></div>
-          <div class="schema-aux schema-pop" style="--pop-delay: 1.6s"><div class="schema-aux-name">chat_messages<br/>ai_descriptions</div><div class="schema-aux-desc">Chat + AI-generated summaries.</div></div>
+  <!-- ── The chain ──────────────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <h2 class="reveal">One file, four levels</h2>
+      <p class="section-lede reveal">
+        The core is a single chain: a <strong>group</strong> holds <strong>families</strong>, a family
+        holds per-session <strong>categories</strong>, a category holds the <strong>entries</strong>
+        you log. Everything else hangs off this spine.
+      </p>
+      <div class="schema reveal">
+        <div class="schema-chain">
+          <span class="sc-box sc-g">category_groups<small>Research · Courses · Personal</small></span>
+          <span class="sc-rel">1&rarr;N</span>
+          <span class="sc-box sc-f">category_families<small>Salk · MPI · COGS…</small></span>
+          <span class="sc-rel">1&rarr;N</span>
+          <span class="sc-box sc-c">categories<small>one per session</small></span>
+          <span class="sc-rel">1&rarr;N</span>
+          <span class="sc-box sc-e">timer_entries<br/>manual_entries<small>the minutes</small></span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Full schema (SQL-style) ─────────────────────────── -->
-  <section id="schema-detail" class="fade-in">
-    <h2>Full schema</h2>
-    <p>
-      Every table, every column, with types and key relationships annotated.
-      <span class="schema-legend-inline">
-        <span class="schema-tag schema-tag-pk">PK</span> primary key &middot;
-        <span class="schema-tag schema-tag-fk">FK</span> foreign key &middot;
-        <span class="schema-tag schema-tag-uq">UQ</span> unique &middot;
-        <span class="schema-tag schema-tag-idx">IDX</span> indexed
-      </span>
-    </p>
+  <!-- ── Detailed schema ────────────────────────────────── -->
+  <section class="band alt">
+    <div class="container">
+      <h2 class="reveal">Every table, the columns that matter</h2>
+      <p class="section-lede reveal">
+        Eleven core tables. <span class="k-pk">id</span> is the primary key everywhere;
+        <span class="k-fk">→</span> marks a foreign key.
+      </p>
 
-    <div class="schema-detail-grid">
-
-      <!-- category_groups -->
-      <article class="schema-tbl schema-tbl-group">
-        <header class="schema-tbl-name">category_groups</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">color</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">DEFAULT 0</span></div>
-          <div class="schema-col"><span class="schema-col-name">is_system</span><span class="schema-col-type">BOOLEAN</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- category_families -->
-      <article class="schema-tbl schema-tbl-family">
-        <header class="schema-tbl-name">category_families</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">color</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">family_type</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">legacy</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">group_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_groups.id</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- family_match_rules -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">family_match_rules</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(match_type, pattern)">UQ</span><span class="schema-col-name">match_type</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">"exact" | "prefix"</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">pattern</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">lowercased</span></div>
-          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- sessions -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">sessions</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(year, season)">UQ</span><span class="schema-col-name">year</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">season</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">label</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">start_date</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">end_date</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">is_active</span><span class="schema-col-type">BOOLEAN</span></div>
-          <div class="schema-col"><span class="schema-col-name">source_file</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- categories -->
-      <article class="schema-tbl schema-tbl-category">
-        <header class="schema-tbl-name">categories</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(session_id, name)">UQ</span><span class="schema-col-name">name</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">display_name</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">SET NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">position</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- daily_records -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">daily_records</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-uq" title="UNIQUE(session_id, date)">UQ</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">day_of_week</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">week_number</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-col-name">total_minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- observations -->
-      <article class="schema-tbl schema-tbl-aggregate">
-        <header class="schema-tbl-name">observations</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-uq" title="UNIQUE(daily_record_id, category_id)">UQ</span><span class="schema-col-name">daily_record_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; daily_records.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-col-name">minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">source</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">timer | manual | import</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- timer_entries -->
-      <article class="schema-tbl schema-tbl-entry">
-        <header class="schema-tbl-name">timer_entries</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">start_time</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL · ISO 8601</span></div>
-          <div class="schema-col"><span class="schema-col-name">end_time</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">pause_start</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">total_paused_seconds</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-col-name">duration_minutes</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-idx" title="partial IDX where is_active=1">IDX</span><span class="schema-col-name">is_active</span><span class="schema-col-type">BOOLEAN</span></div>
-          <div class="schema-col"><span class="schema-col-name">is_paused</span><span class="schema-col-type">BOOLEAN</span></div>
-          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">updated_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- manual_entries -->
-      <article class="schema-tbl schema-tbl-entry">
-        <header class="schema-tbl-name">manual_entries</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">category_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; categories.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">duration_minutes</span><span class="schema-col-type">INTEGER</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- text_entries -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">text_entries</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-tag schema-tag-idx">IDX</span><span class="schema-col-name">date</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">location</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">notes</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">study_materials</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- settings -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">settings</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">key</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">value</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL · API key obfuscated</span></div>
-          <div class="schema-col"><span class="schema-col-name">updated_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- chat_messages -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">chat_messages</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col"><span class="schema-col-name">role</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">"user" | "assistant"</span></div>
-          <div class="schema-col"><span class="schema-col-name">content</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">metadata</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">JSON</span></div>
-          <div class="schema-col"><span class="schema-col-name">created_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
-      <!-- ai_descriptions -->
-      <article class="schema-tbl schema-tbl-aux">
-        <header class="schema-tbl-name">ai_descriptions</header>
-        <div class="schema-tbl-cols">
-          <div class="schema-col"><span class="schema-tag schema-tag-pk">PK</span><span class="schema-col-name">id</span><span class="schema-col-type">INTEGER</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-tag schema-tag-uq" title="UNIQUE(family_id, session_id)">UQ</span><span class="schema-col-name">family_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; category_families.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col schema-col-fk"><span class="schema-tag schema-tag-fk">FK</span><span class="schema-col-name">session_id</span><span class="schema-col-type">INTEGER</span><span class="schema-col-ref">&rarr; sessions.id</span><span class="schema-col-note">CASCADE</span></div>
-          <div class="schema-col"><span class="schema-col-name">description</span><span class="schema-col-type">TEXT</span><span class="schema-col-note">NOT NULL</span></div>
-          <div class="schema-col"><span class="schema-col-name">model_used</span><span class="schema-col-type">TEXT</span></div>
-          <div class="schema-col"><span class="schema-col-name">generated_at</span><span class="schema-col-type">TEXT</span></div>
-        </div>
-      </article>
-
+      <div class="tbl-grid">
+        <article class="tbl-card reveal sc-g">
+          <header>sessions</header>
+          <ul><li>year, season, label</li><li>start_date, end_date</li><li>is_active</li></ul>
+        </article>
+        <article class="tbl-card reveal sc-g">
+          <header>category_groups</header>
+          <ul><li>name, display_name</li><li>color, position</li><li>is_system</li></ul>
+        </article>
+        <article class="tbl-card reveal sc-f">
+          <header>category_families</header>
+          <ul><li>name, display_name, color</li><li class="fk">group_id → groups</li></ul>
+        </article>
+        <article class="tbl-card reveal sc-c">
+          <header>categories</header>
+          <ul><li>name, display_name</li><li class="fk">session_id → sessions</li><li class="fk">family_id → families</li></ul>
+        </article>
+        <article class="tbl-card reveal sc-e">
+          <header>timer_entries</header>
+          <ul><li class="fk">session_id, category_id</li><li>date, start_time, end_time</li><li>duration_minutes, is_paused</li></ul>
+        </article>
+        <article class="tbl-card reveal sc-e">
+          <header>manual_entries</header>
+          <ul><li class="fk">session_id, category_id</li><li>date, duration_minutes</li><li>description, start_time</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>daily_records</header>
+          <ul><li class="fk">session_id → sessions</li><li>date, week_number</li><li>total_minutes</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>observations</header>
+          <ul><li class="fk">daily_record_id, category_id</li><li>minutes</li><li>source (import/timer/manual)</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>break_days</header>
+          <ul><li>date (unique)</li><li>label</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>family_match_rules</header>
+          <ul><li class="fk">family_id → families</li><li>match_type (exact / prefix)</li><li>pattern</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>text_entries</header>
+          <ul><li class="fk">session_id → sessions</li><li>date, location</li><li>notes, study_materials</li></ul>
+        </article>
+        <article class="tbl-card reveal">
+          <header>settings · chat_messages · ai_descriptions</header>
+          <ul><li>key/value config</li><li>chat history</li><li>generated summaries</li></ul>
+        </article>
+      </div>
     </div>
   </section>
 
-  <!-- ── Animated ops ──────────────────────────────────── -->
-  <section id="operations" class="fade-in">
-    <h2>Watch the database change</h2>
-    <p>
-      Each panel shows the tables that the operation touches, with rows appearing,
-      values flashing, and aggregates re-balancing as the app commits its writes.
-      Everything loops &mdash; let it run for a few seconds to see the full sequence.
-    </p>
+  <!-- ── Watch a write land ─────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <h2 class="reveal">Watch a write land</h2>
+      <p class="section-lede reveal">
+        Stop a 45-minute timer and three tables change in <strong>one transaction</strong> &mdash;
+        the entry is recorded, the per-day-per-category aggregate is upserted, and the day&rsquo;s
+        total recomputes. Charts read the aggregate, never the raw rows.
+      </p>
 
-    <!-- START a timer -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-add">▶ START</span>
-        <div><h3>Start a timer</h3><p>You hit play on a category. A row appears in <code>timer_entries</code> &mdash; nothing else changes yet.</p></div>
-      </header>
-      <div class="op-viz op-viz-start">
-        <div class="db-mini-table">
-          <div class="db-mini-header">timer_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>id</span><span>category</span><span>start_time</span><span>active</span></div>
-            <div class="db-mini-row db-mini-row-static"><span>13</span><span>Salk</span><span>09:14</span><span class="db-dot db-dot-off"></span></div>
-            <div class="db-mini-row db-mini-row-static"><span>12</span><span>COGS 172</span><span>08:02</span><span class="db-dot db-dot-off"></span></div>
-            <div class="db-mini-row anim-insert" style="--start: 0.6s; --cycle: 4s">
-              <span>14</span><span>Salk</span><span>14:32</span><span class="db-dot db-dot-on"></span>
-            </div>
+      <div class="db-flow reveal" id="dbflow">
+        <button class="db-replay" data-replay="#dbflow" type="button">↻ Replay</button>
+        <div class="db-tables">
+          <div class="db-tbl">
+            <div class="db-tbl-h">timer_entries <span class="db-op">INSERT</span></div>
+            <div class="db-row db-faint"><span>May 25</span><span>Salk</span><span>earlier</span></div>
+            <div class="db-row db-new"><span>May 25</span><span>Salk</span><span>45m</span></div>
           </div>
-        </div>
-        <div class="op-narration">
-          <div class="op-bullet anim-bullet" style="--start: 0.5s; --cycle: 4s">▸ <code>INSERT INTO timer_entries</code> with <code>is_active = true</code></div>
-          <div class="op-bullet anim-bullet" style="--start: 1.6s; --cycle: 4s">▸ No other tables touched — duration is unknown until stop</div>
-        </div>
-      </div>
-    </article>
-
-    <!-- STOP a timer -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-add">⏹ STOP</span>
-        <div><h3>Stop a timer</h3><p>Duration computes, the timer row updates, then <code>observations</code> and <code>text_entries</code> roll the change up.</p></div>
-      </header>
-      <div class="op-viz op-viz-stop">
-        <div class="db-mini-table">
-          <div class="db-mini-header">timer_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>id</span><span>category</span><span>duration</span><span>active</span></div>
-            <div class="db-mini-row anim-update" style="--start: 1s; --cycle: 7s">
-              <span>14</span><span>Salk</span>
-              <span class="anim-value-swap">
-                <span class="anim-value-old">—</span><span class="anim-value-new">35m</span>
-              </span>
-              <span class="anim-dot-swap">
-                <span class="db-dot db-dot-on anim-dot-old"></span><span class="db-dot db-dot-off anim-dot-new"></span>
-              </span>
-            </div>
+          <div class="db-arrow">&rarr;</div>
+          <div class="db-tbl">
+            <div class="db-tbl-h">observations <span class="db-op">UPSERT</span></div>
+            <div class="db-row db-up"><span>May 25 · Salk</span><span class="db-val"><span class="counter" data-from="120" data-to="165" data-suffix="m">120m</span></span></div>
           </div>
-        </div>
-
-        <div class="db-mini-table">
-          <div class="db-mini-header">observations</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>category</span><span>minutes</span></div>
-            <div class="db-mini-row db-mini-row-static">
-              <span>2026-05-26</span><span>Salk</span>
-              <span class="anim-counter" style="--start: 2.5s; --cycle: 7s">
-                <span class="anim-counter-old">70m</span><span class="anim-counter-new">105m</span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="db-mini-table">
-          <div class="db-mini-header">text_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>study_materials</span></div>
-            <div class="db-mini-row db-mini-row-static">
-              <span>2026-05-26</span>
-              <span class="anim-append" style="--start: 4s; --cycle: 7s">
-                <span>"meeting (60m), wrote analysis (35m)"</span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="op-narration">
-          <div class="op-bullet anim-bullet" style="--start: 0.6s; --cycle: 7s">▸ duration_minutes = round((now − start − paused) / 60) = <b>35m</b></div>
-          <div class="op-bullet anim-bullet" style="--start: 2.2s; --cycle: 7s">▸ observation for (2026-05-26, Salk) gets <b>+35m</b></div>
-          <div class="op-bullet anim-bullet" style="--start: 3.7s; --cycle: 7s">▸ today&rsquo;s narrative appends the description</div>
-          <div class="op-bullet anim-bullet op-bullet-aside" style="--start: 5s; --cycle: 7s">▸ if you picked <em>Yesterday</em> in the late-night prompt, <code>date</code> shifts <em>before</em> the upsert</div>
-        </div>
-      </div>
-    </article>
-
-    <!-- ADD manual entry -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-add">＋ ADD</span>
-        <div><h3>Add a manual entry</h3><p>You forgot to time something. Insert + upsert + append, same downstream story as stop.</p></div>
-      </header>
-      <div class="op-viz op-viz-add">
-        <div class="db-mini-table">
-          <div class="db-mini-header">manual_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>category</span><span>min</span><span>note</span></div>
-            <div class="db-mini-row anim-insert" style="--start: 0.5s; --cycle: 5.5s">
-              <span>2026-05-25</span><span>Salk</span><span>90</span><span class="db-mini-cell-wrap">debugging</span>
-            </div>
-          </div>
-        </div>
-        <div class="db-mini-table">
-          <div class="db-mini-header">observations</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>category</span><span>minutes</span></div>
-            <div class="db-mini-row db-mini-row-static">
-              <span>2026-05-25</span><span>Salk</span>
-              <span class="anim-counter" style="--start: 1.8s; --cycle: 5.5s">
-                <span class="anim-counter-old">120m</span><span class="anim-counter-new">210m</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="db-mini-table">
-          <div class="db-mini-header">text_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>study_materials</span></div>
-            <div class="db-mini-row db-mini-row-static">
-              <span>2026-05-25</span>
-              <span class="anim-append" style="--start: 3.2s; --cycle: 5.5s">
-                <span>"&hellip;, debugging"</span>
-              </span>
-            </div>
+          <div class="db-arrow">&rarr;</div>
+          <div class="db-tbl">
+            <div class="db-tbl-h">daily_records <span class="db-op">RECOMPUTE</span></div>
+            <div class="db-row db-total"><span>May 25 total</span><span class="db-val"><span class="counter" data-from="200" data-to="245" data-suffix="m">200m</span></span></div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
+  </section>
 
-    <!-- EDIT entry: rebalance -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-edit">✎ EDIT</span>
-        <div><h3>Edit an entry</h3><p>Change the category, the date, or the duration — and the aggregate <em>rebalances</em>: subtract from the old, add to the new.</p></div>
-      </header>
-      <div class="op-viz op-viz-edit">
-        <div class="db-mini-table db-mini-wide">
-          <div class="db-mini-header">timer_entries (row #87)</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>category</span><span>duration</span></div>
-            <div class="db-mini-row anim-morph" style="--cycle: 7s">
-              <span class="anim-text-swap"><span class="anim-text-old">2026-05-25</span><span class="anim-text-new">2026-05-26</span></span>
-              <span class="anim-text-swap" style="--swap-delay: 0s"><span class="anim-text-old">COGS</span><span class="anim-text-new">Salk</span></span>
-              <span class="anim-text-swap"><span class="anim-text-old">60m</span><span class="anim-text-new">75m</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="op-viz-flow">
-          <div class="db-mini-table db-mini-half">
-            <div class="db-mini-header">observations · SUBTRACT</div>
-            <div class="db-mini-rows">
-              <div class="db-mini-row db-mini-row-warn anim-fade-out" style="--start: 0s; --cycle: 7s">
-                <span>2026-05-25</span><span>COGS</span><span><s>60m</s> &rarr; 0m</span>
-              </div>
-            </div>
-          </div>
-          <div class="db-mini-flow-arrow">&rarr;</div>
-          <div class="db-mini-table db-mini-half">
-            <div class="db-mini-header">observations · UPSERT</div>
-            <div class="db-mini-rows">
-              <div class="db-mini-row db-mini-row-good anim-insert" style="--start: 2.8s; --cycle: 7s">
-                <span>2026-05-26</span><span>Salk</span><span>+75m</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="op-narration">
-          <div class="op-bullet op-bullet-aside anim-bullet" style="--start: 4.5s; --cycle: 7s">▸ Net effect: charts always reflect the current truth, no matter how an entry has been reshaped.</div>
-        </div>
+  <!-- ── More operations ────────────────────────────────── -->
+  <section class="band alt">
+    <div class="container">
+      <h2 class="reveal">Every other change, same discipline</h2>
+      <p class="section-lede reveal">
+        Whatever you do, the stored aggregate stays correct &mdash; writes always go through, never around it.
+      </p>
+      <div class="op-grid">
+        <article class="op-card reveal">
+          <h3>Add a manual entry</h3>
+          <div class="op-tables"><span>manual_entries +1</span><span>observations ↑</span><span>daily_records ↻</span></div>
+          <p>Insert, then the same upsert-and-recompute as a timer stop. Identical downstream.</p>
+        </article>
+        <article class="op-card reveal">
+          <h3>Edit an entry</h3>
+          <div class="op-tables"><span>observations −old</span><span>observations +new</span></div>
+          <p>Change the date, category, or duration and the aggregate <em>rebalances</em>: subtract from the old bucket, add to the new.</p>
+        </article>
+        <article class="op-card reveal">
+          <h3>Delete an entry</h3>
+          <div class="op-tables"><span>observations ↓</span><span>row removed</span></div>
+          <p>Subtract from the aggregate first; the observation is dropped if it hits zero. Then the row goes.</p>
+        </article>
+        <article class="op-card reveal">
+          <h3>Mark a break</h3>
+          <div class="op-tables"><span>break_days +1</span><span>no minutes</span></div>
+          <p>A date (or range) is inserted with a label. It adds no time; the streak query simply steps over it.</p>
+        </article>
+        <article class="op-card reveal">
+          <h3>Import a CSV pair</h3>
+          <div class="op-tables"><span>sessions</span><span>categories</span><span>daily_records</span><span>observations</span><span>text_entries</span></div>
+          <p>One file pair fans across the tables in a single transaction; new categories auto-link to families by rule.</p>
+        </article>
+        <article class="op-card reveal">
+          <h3>Replace the database</h3>
+          <div class="op-tables"><span>validate</span><span>logger.db.bak</span><span>swap</span><span>init_db</span></div>
+          <p>Magic-bytes checked, current file rolled into one backup, the file swapped, then idempotent migrations re-run.</p>
+        </article>
       </div>
-    </article>
+    </div>
+  </section>
 
-    <!-- ADD a family -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-add">⚑ FAMILY</span>
-        <div><h3>Add a new family</h3><p>One insert into <code>category_families</code>, optionally with auto-link rules.</p></div>
-      </header>
-      <div class="op-viz op-viz-family">
-        <div class="db-mini-table">
-          <div class="db-mini-header">category_families</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>id</span><span>name</span><span>group</span><span>color</span></div>
-            <div class="db-mini-row db-mini-row-static"><span>11</span><span>salk</span><span>Research</span><span><span class="db-swatch" style="--c:#3b82f6"></span></span></div>
-            <div class="db-mini-row db-mini-row-static"><span>13</span><span>cse</span><span>Courses</span><span><span class="db-swatch" style="--c:#6366f1"></span></span></div>
-            <div class="db-mini-row anim-insert" style="--start: 0.8s; --cycle: 5.5s">
-              <span>26</span><span>robotics</span><span>Research</span><span><span class="db-swatch" style="--c:#10b981"></span></span>
-            </div>
-          </div>
-        </div>
-        <div class="db-mini-table">
-          <div class="db-mini-header">family_match_rules</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>type</span><span>pattern</span><span>family</span></div>
-            <div class="db-mini-row db-mini-row-static"><span>exact</span><span>salk</span><span>salk</span></div>
-            <div class="db-mini-row db-mini-row-static"><span>prefix</span><span>cse</span><span>cse</span></div>
-            <div class="db-mini-row anim-insert" style="--start: 2.3s; --cycle: 5.5s">
-              <span>exact</span><span>robotics</span><span>robotics</span>
-            </div>
-          </div>
-        </div>
-        <div class="op-narration">
-          <div class="op-bullet op-bullet-aside anim-bullet" style="--start: 3.8s; --cycle: 5.5s">▸ Existing categories aren&rsquo;t touched — you assign them via the Family Manager.</div>
-        </div>
+  <!-- ── Reading it back ────────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <h2 class="reveal">Reading it back, fast</h2>
+      <p class="section-lede reveal">
+        Because the aggregate is always current, every view is a cheap read &mdash; no scanning thousands of raw entries.
+      </p>
+      <div class="read-grid">
+        <article class="read-card reveal">
+          <div class="read-ic">∑</div>
+          <h3>Pre-aggregated truth</h3>
+          <p><code>observations</code> holds minutes per day per category. Dashboards and charts query it directly.</p>
+        </article>
+        <article class="read-card reveal">
+          <div class="read-ic">⊞</div>
+          <h3>Two SQL views</h3>
+          <p><code>v_daily_totals</code> (date × category) and <code>v_family_totals</code> (family per session) pre-join the hierarchy for analytics.</p>
+        </article>
+        <article class="read-card reveal">
+          <div class="read-ic">🔥</div>
+          <h3>Streaks, break-aware</h3>
+          <p>The streak walks <code>daily_records</code> back from today; a day in <code>break_days</code> bridges the gap instead of resetting it.</p>
+        </article>
       </div>
-    </article>
-
-    <!-- IMPORT CSV -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-import">📥 IMPORT</span>
-        <div><h3>Import a CSV pair</h3><p>One file pair fans out across six tables in a single transaction.</p></div>
-      </header>
-      <div class="op-viz op-viz-import">
-        <div class="db-mini-file">
-          <div class="db-mini-file-icon">CSV</div>
-          <div class="db-mini-file-name">2026_spring_study.csv<br/>2026_spring_text.csv</div>
-        </div>
-        <div class="db-mini-fanout">
-          <div class="db-mini-pill anim-pill-fly" style="--start: 0.6s; --cycle: 8s">sessions · +1</div>
-          <div class="db-mini-pill anim-pill-fly" style="--start: 1.4s; --cycle: 8s">categories · +10</div>
-          <div class="db-mini-pill anim-pill-fly" style="--start: 2.2s; --cycle: 8s">categories.family_id linked</div>
-          <div class="db-mini-pill anim-pill-fly" style="--start: 3.0s; --cycle: 8s">daily_records · +56</div>
-          <div class="db-mini-pill anim-pill-fly" style="--start: 3.8s; --cycle: 8s">observations · +254</div>
-          <div class="db-mini-pill anim-pill-fly" style="--start: 4.6s; --cycle: 8s">text_entries · +56</div>
-        </div>
-      </div>
-    </article>
-
-    <!-- SWAP database -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-danger">⇄ SWAP</span>
-        <div><h3>Replace the database</h3><p>The file on disk is swapped. The previous DB rolls into a single backup. Schema migrations re-run on the new file.</p></div>
-      </header>
-      <div class="op-viz op-viz-swap">
-        <div class="db-mini-files">
-          <div class="db-mini-file">
-            <div class="db-mini-file-icon db-mini-file-icon-current">DB</div>
-            <div class="db-mini-file-name">logger.db<br/><small>current</small></div>
-          </div>
-          <div class="db-mini-file db-mini-file-incoming anim-file-incoming" style="--cycle: 7s">
-            <div class="db-mini-file-icon db-mini-file-icon-new">DB</div>
-            <div class="db-mini-file-name">uploaded.db<br/><small>candidate</small></div>
-          </div>
-          <div class="db-mini-file db-mini-file-bak anim-file-bak" style="--cycle: 7s">
-            <div class="db-mini-file-icon db-mini-file-icon-bak">BAK</div>
-            <div class="db-mini-file-name">logger.db.bak<br/><small>rolling backup</small></div>
-          </div>
-        </div>
-        <div class="op-narration">
-          <div class="op-bullet anim-bullet" style="--start: 0.3s; --cycle: 7s">▸ <span class="op-tag op-tag-validate">VALIDATE</span> magic bytes + open + SELECT 1</div>
-          <div class="op-bullet anim-bullet" style="--start: 1.6s; --cycle: 7s">▸ <span class="op-tag op-tag-upsert">COPY</span> logger.db → logger.db.bak</div>
-          <div class="op-bullet anim-bullet op-bullet-warn" style="--start: 2.9s; --cycle: 7s">▸ <span class="op-tag op-tag-update">DISPOSE</span> engine pool — open connections close</div>
-          <div class="op-bullet anim-bullet" style="--start: 4.2s; --cycle: 7s">▸ <span class="op-tag op-tag-update">MOVE</span> candidate.db → logger.db</div>
-          <div class="op-bullet anim-bullet op-bullet-good" style="--start: 5.4s; --cycle: 7s">▸ <span class="op-tag op-tag-compute">init_db()</span> idempotently catches up the schema</div>
-        </div>
-      </div>
-    </article>
-
-    <!-- DELETE entry -->
-    <article class="op-stage">
-      <header class="op-stage-header">
-        <span class="op-badge op-badge-danger">🗑 DELETE</span>
-        <div><h3>Delete an entry</h3><p>Subtract from the aggregate first, then drop the row. The narrative log stays.</p></div>
-      </header>
-      <div class="op-viz op-viz-delete">
-        <div class="db-mini-table">
-          <div class="db-mini-header">observations</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>date</span><span>category</span><span>minutes</span></div>
-            <div class="db-mini-row db-mini-row-static">
-              <span>2026-05-26</span><span>Salk</span>
-              <span class="anim-counter" style="--start: 0.4s; --cycle: 5.5s">
-                <span class="anim-counter-old">105m</span><span class="anim-counter-new">70m</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="db-mini-table">
-          <div class="db-mini-header">timer_entries</div>
-          <div class="db-mini-rows">
-            <div class="db-mini-headerrow"><span>id</span><span>category</span><span>duration</span></div>
-            <div class="db-mini-row db-mini-row-warn anim-strike-out" style="--start: 2s; --cycle: 5.5s">
-              <span>14</span><span>Salk</span><span>35m</span>
-            </div>
-          </div>
-        </div>
-        <div class="op-narration">
-          <div class="op-bullet op-bullet-aside anim-bullet" style="--start: 3.5s; --cycle: 5.5s">▸ text_entries stays — the day&rsquo;s narrative isn&rsquo;t rewound.</div>
-        </div>
-      </div>
-    </article>
-
+    </div>
   </section>
 
   <!-- ── Properties ─────────────────────────────────────── -->
-  <section id="properties" class="fade-in">
-    <h2>Properties worth knowing</h2>
-    <div class="storage-notes">
-      <ul>
-        <li><strong>Aggregations are stored, not derived on read.</strong> <code>observations</code> is the truth for analytics — updated transactionally with every write so charts never have to scan timer/manual tables.</li>
-        <li><strong>Schema migrations are idempotent.</strong> Every backend start runs <code>init_db</code>, which probes before it changes anything. Safe to restart at any time; safe to load an older DB.</li>
-        <li><strong>The DB is the source of truth.</strong> Use <em>Download current</em> from Settings to archive a snapshot; <em>Choose .db file</em> to load one back.</li>
-        <li><strong>Late-night attribution lives at the entry, not the aggregate.</strong> A timer started at 1am that you attributed to &ldquo;yesterday&rdquo; writes <code>date = yesterday</code> on the entry; the observation rolls up under yesterday too.</li>
-        <li><strong>One rolling backup.</strong> Each DB swap overwrites <code>logger.db.bak</code> — if you want a longer trail, <em>Download current</em> first.</li>
+  <section class="band alt">
+    <div class="container">
+      <h2 class="reveal">Why it holds up</h2>
+      <ul class="props reveal">
+        <li><strong>Aggregations are stored, not derived.</strong> <code>observations</code> is written transactionally with every entry &mdash; charts never scan raw timer or manual rows.</li>
+        <li><strong>Every mutation is transactional.</strong> Insert/upsert/recompute commit together; a failure rolls the whole thing back, so totals can&rsquo;t drift from entries.</li>
+        <li><strong>Migrations are idempotent.</strong> Every start runs <code>init_db</code>, which probes the schema before it changes anything. Safe to restart; safe to load an older database.</li>
+        <li><strong>The file is the source of truth.</strong> <em>Download current</em> archives a snapshot; <em>Choose .db file</em> loads one back. Each swap keeps one rolling <code>logger.db.bak</code>.</li>
+        <li><strong>Dates live on the entry.</strong> A timer started at 1am attributed to &ldquo;yesterday&rdquo; writes <code>date = yesterday</code>; the aggregate rolls up under yesterday too.</li>
       </ul>
+      <p class="uth-source reveal">
+        Every table and column lives in
+        <a href="https://github.com/KevinBian107/logger/blob/main/backend/logger/models.py" target="_blank" rel="noopener">models.py</a>.
+      </p>
     </div>
-    <p class="subpage-return"><a href="index.html">&larr; Back to log(ger)</a></p>
   </section>
 
 </main>
 
 <footer>
-  <div class="container">
-    <p>log(ger) is open source under the <a href="https://github.com/KevinBian107/logger/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+  <div class="container footer-inner">
+    <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+    <p>MIT licensed. <a href="index.html">Back to the overview &rarr;</a></p>
   </div>
 </footer>
 

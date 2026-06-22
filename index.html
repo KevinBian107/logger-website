@@ -4,589 +4,323 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>log(ger) &mdash; Track time like you mean it.</title>
-  <meta name="description" content="A personal productivity tracker that replaces spreadsheets with real-time timers, hierarchical organization, and an AI assistant that can answer questions about your own time." />
+  <meta name="description" content="A local-first time tracker: real-time timers, breaks, analytics that rescale with one control, and an AI that answers questions about your own time. No cloud, no accounts." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- Table of Contents (sidebar, large screens) -->
-<nav class="toc-wrapper" aria-label="Table of Contents">
-  <div class="toc">
-    <h4>Contents</h4>
-    <a href="#overview" data-toc-link>What it is</a>
-    <a href="#demo" data-toc-link>Demo</a>
-    <a href="#workflow" data-toc-link>Workflow</a>
-    <a href="#features" data-toc-link>Features</a>
-    <a href="#hierarchy" data-toc-link>How it's organized</a>
-    <a href="#data-to-insight" data-toc-link>Data &rarr; Insight</a>
-    <a href="#getting-started" data-toc-link>Try it</a>
-    <a href="#acknowledgments" data-toc-link>Credits</a>
-  </div>
-</nav>
+<main>
 
-<main class="container">
-
-  <!-- Hero -->
-  <header class="hero" id="top">
-    <div class="hero-logo-text">
-      <span class="logo-text">log<span class="logo-dim">(</span>ger<span class="logo-dim">)</span></span>
-    </div>
-    <p class="subtitle">
-      Track time like you mean it. A personal productivity tracker that replaces spreadsheets with
-      real-time timers, hierarchical organization, and an AI assistant that can answer questions
-      about your own time.
-    </p>
-    <p class="author">
-      <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a> &middot;
-      <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a> &middot;
-      <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>
-    </p>
-
-    <div class="quick-links">
-      <a href="#demo">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3v10l8-5-8-5z"/></svg>
-        Watch the demo
-      </a>
-      <a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        Source code
-      </a>
-      <a href="#getting-started">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 1a.75.75 0 00-1.5 0v7.69L4.78 6.22a.75.75 0 10-1.06 1.06l3.75 3.75c.3.3.77.3 1.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.69V1zM2.75 13a.75.75 0 000 1.5h10.5a.75.75 0 000-1.5H2.75z"/></svg>
-        Try it locally
-      </a>
-      <a href="under-the-hood.html">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5C2 2.12 4.69 1 8 1s6 1.12 6 2.5v9c0 1.38-2.69 2.5-6 2.5s-6-1.12-6-2.5v-9zm6 5c2.97 0 5.4-.79 5.4-2.5S10.97 4 8 4s-5.4.79-5.4 2c0 1.71 2.43 2.5 5.4 2.5z"/></svg>
-        Under the hood
-      </a>
+  <!-- ── Hero ───────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="container hero-inner">
+      <h1 class="reveal logo">log<span class="dim">(</span>ger<span class="dim">)</span></h1>
+      <p class="tagline reveal">Track time like you mean it.</p>
+      <p class="lede reveal">
+        A personal time tracker with real-time timers, analytics that rescale with one
+        control, and an AI that answers questions about your own time. Your data lives
+        on your machine &mdash; nowhere else.
+      </p>
+      <div class="cta-row reveal">
+        <a class="btn btn-primary" href="#get-it">Run it locally</a>
+        <a class="btn" href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Source
+        </a>
+        <a class="btn" href="under-the-hood.html">Under the hood</a>
+      </div>
+      <p class="authors reveal">
+        <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a> &middot;
+        <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a> &middot;
+        <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>
+      </p>
     </div>
 
-    <div class="dev-banner">
-      <strong>Local-first &middot; Mac native.</strong>
-      Runs as a real <code>.app</code> on your machine &mdash; your database stays in
-      <code>~/Library/Application&nbsp;Support/Logger/</code>. No cloud, no accounts.
-      <a href="#getting-started">Build &amp; launch instructions &darr;</a>
+    <!-- Product mock -->
+    <div class="container">
+      <div class="mock reveal" aria-label="log(ger) dashboard preview">
+        <div class="mock-chrome">
+          <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+          <span class="mock-title">log(ger) — Spring 2026</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-top">
+            <div>
+              <div class="mock-greet">Good afternoon</div>
+              <div class="mock-sub">Monday · May 25</div>
+            </div>
+            <span class="mock-pill"><span class="mock-live"></span>Spring 2026 · active</span>
+          </div>
+          <div class="mock-stats">
+            <div class="mock-stat"><span class="mock-stat-k">Today</span><span class="mock-stat-v"><span class="counter" data-to="245" data-suffix="m">0m</span></span></div>
+            <div class="mock-stat"><span class="mock-stat-k">Entries</span><span class="mock-stat-v"><span class="counter" data-to="4">0</span></span></div>
+            <div class="mock-stat mock-stat-accent"><span class="mock-stat-k">Streak</span><span class="mock-stat-v"><span class="counter" data-to="14" data-suffix="d">0d</span></span></div>
+            <div class="mock-stat"><span class="mock-stat-k">Quick start</span><span class="mock-stat-v mock-quick">Salk Research <span class="mock-play">▶</span></span></div>
+          </div>
+          <svg class="mock-chart" viewBox="0 0 600 150" preserveAspectRatio="none" aria-hidden="true">
+            <path class="mock-area mock-area-2" d="M0 150 L0 92 C120 78 240 64 360 60 C460 57 540 54 600 50 L600 150 Z" />
+            <path class="mock-area mock-area-1" d="M0 150 L0 118 C120 110 240 100 360 96 C460 93 540 90 600 86 L600 150 Z" />
+          </svg>
+          <div class="mock-legend">
+            <span style="--c:#6366F1">Salk</span>
+            <span style="--c:#A855F7">COGS</span>
+            <span style="--c:#F59E0B">PP</span>
+            <span style="--c:#10B981">Training</span>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- What it is -->
-  <section id="overview" class="fade-in">
-    <h2>What it is</h2>
-    <p>
-      log(ger) is for people who care enough about their time to track it &mdash; students, researchers,
-      makers &mdash; but who never want to feel like they&rsquo;re doing data entry. You hit start,
-      you do the work, you hit stop. Everything else &mdash; the dashboards, the streaks, the
-      project-progression view, the natural-language Q&amp;A &mdash; flows from the same simple act.
-    </p>
-    <p>
-      The previous version of this idea lived in
-      <a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener">Chatable-Study-Database</a> &mdash;
-      three years of CSV files, a Jupyter notebook, and a homemade RAG pipeline. It worked, but
-      every quarter cost an hour of column-formatting and asking simple questions cost a pandas query.
-      log(ger) closes that loop into a single web app.
-    </p>
-  </section>
-
-  <!-- Demo -->
-  <section id="demo" class="fade-in">
-    <h2>See it in two minutes</h2>
-    <p>
-      Watch a full workflow: starting a session, logging time with timers, adding entries by hand,
-      browsing analytics, and asking the chat about your own data.
-    </p>
-
-    <!--
-      Animated HTML demo (not a real screen recording — a CSS-driven mockup that
-      loops through the same beats from the workflow shot list). If you record a
-      real screen capture later, drop logger-demo.mp4 here and swap this block
-      for a <video> tag.
-    -->
-    <div class="demo-player" aria-label="log(ger) feature demo">
-      <!-- Faux browser/window chrome -->
-      <div class="demo-chrome">
-        <span class="demo-dot demo-dot-red"></span>
-        <span class="demo-dot demo-dot-yellow"></span>
-        <span class="demo-dot demo-dot-green"></span>
-        <span class="demo-chrome-title">log(ger) — Spring 2026</span>
-      </div>
-
-      <!-- Stacked scenes; CSS keyframes fade between them -->
-      <div class="demo-stage">
-        <!-- Scene 1: Dashboard with running timer -->
-        <div class="demo-scene demo-scene-1">
-          <div class="demo-header">
-            <div>
-              <div class="demo-greeting">Good afternoon</div>
-              <div class="demo-date">Monday · May 25</div>
-            </div>
-            <div class="demo-session-pill">
-              <span class="demo-session-dot"></span>
-              Spring 2026 · active
-            </div>
-          </div>
-          <div class="demo-statcards">
-            <div class="demo-stat">
-              <div class="demo-stat-label">Today's Total</div>
-              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="245" data-suffix="m">0m</span></div>
-            </div>
-            <div class="demo-stat">
-              <div class="demo-stat-label">Entries Today</div>
-              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="4" data-suffix="">0</span></div>
-            </div>
-            <div class="demo-stat demo-stat-accent">
-              <div class="demo-stat-label">Current Streak</div>
-              <div class="demo-stat-value"><span class="demo-counter" data-from="0" data-to="14" data-suffix="d">0d</span></div>
-            </div>
-            <div class="demo-stat">
-              <div class="demo-stat-label">Quick Start</div>
-              <div class="demo-quick">
-                <span class="demo-quick-cat">Salk Research</span>
-                <span class="demo-play-btn">▶</span>
-              </div>
-            </div>
-          </div>
-          <div class="demo-timer">
-            <span class="demo-timer-dot"></span>
-            <span class="demo-timer-label">Salk Research</span>
-            <span class="demo-timer-clock">00:14:32</span>
-          </div>
-        </div>
-
-        <!-- Scene 2: Analytics chart drawing in -->
-        <div class="demo-scene demo-scene-2">
-          <div class="demo-section-title">Analytics · this quarter</div>
-          <svg class="demo-chart" viewBox="0 0 600 220" preserveAspectRatio="none">
-            <!-- Stacked area chart, four bands -->
-            <path class="demo-area demo-area-4" d="M0 220 L0 130 C100 110 200 90 300 80 C400 70 500 75 600 70 L600 220 Z" />
-            <path class="demo-area demo-area-3" d="M0 220 L0 155 C100 145 200 125 300 115 C400 110 500 105 600 100 L600 220 Z" />
-            <path class="demo-area demo-area-2" d="M0 220 L0 180 C100 170 200 160 300 150 C400 145 500 140 600 135 L600 220 Z" />
-            <path class="demo-area demo-area-1" d="M0 220 L0 200 C100 195 200 190 300 185 C400 180 500 175 600 170 L600 220 Z" />
-            <!-- Heatmap squares above (weekly heatmap suggestion) -->
-            <g class="demo-heatmap" transform="translate(20, 12)">
-              <!-- 4 rows x 13 cols -->
-            </g>
-          </svg>
-          <div class="demo-legend">
-            <span class="demo-leg-chip" style="--c:#3B82F6">Salk</span>
-            <span class="demo-leg-chip" style="--c:#A855F7">COGS</span>
-            <span class="demo-leg-chip" style="--c:#F59E0B">PP</span>
-            <span class="demo-leg-chip" style="--c:#EF4444">Training</span>
-          </div>
-        </div>
-
-        <!-- Scene 3: Group → Family → Category hierarchy with bubble pop-in -->
-        <div class="demo-scene demo-scene-3">
-          <div class="demo-section-title">Group → Family → Category</div>
-          <div class="demo-bubbles">
-            <div class="demo-bubble demo-bubble-research">
-              <span class="demo-bubble-label">Research</span>
-              <div class="demo-bubble-inner demo-bubble-inner-1"><span>Salk</span></div>
-              <div class="demo-bubble-inner demo-bubble-inner-2"><span>MPI</span></div>
-              <div class="demo-bubble-inner demo-bubble-inner-3"><span>SWL</span></div>
-            </div>
-            <div class="demo-bubble demo-bubble-courses">
-              <span class="demo-bubble-label">Courses</span>
-              <div class="demo-bubble-inner demo-bubble-inner-4"><span>COGS</span></div>
-              <div class="demo-bubble-inner demo-bubble-inner-5"><span>DSC</span></div>
-            </div>
-            <div class="demo-bubble demo-bubble-training">
-              <span class="demo-bubble-label">Training</span>
-              <div class="demo-bubble-inner demo-bubble-inner-6"><span>Training</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scene 4: Chat — user query streams in, then assistant answer -->
-        <div class="demo-scene demo-scene-4">
-          <div class="demo-section-title">Ask your own data</div>
-          <div class="demo-chat">
-            <div class="demo-msg demo-msg-user">
-              <div class="demo-msg-bubble">How much research time this quarter?</div>
-            </div>
-            <div class="demo-msg demo-msg-assistant">
-              <div class="demo-msg-bubble">
-                <span class="demo-typing">In Spring 2026 you've logged <strong>52h 15m</strong> of research — 41% on Salk lab work and 32% on TopoMIMIC. Peak day: April 22 with 6h 40m.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Progress strip across all scenes -->
-      <div class="demo-progress">
-        <div class="demo-progress-bar"></div>
-        <div class="demo-progress-ticks">
-          <span class="demo-tick demo-tick-1">Dashboard</span>
-          <span class="demo-tick demo-tick-2">Analytics</span>
-          <span class="demo-tick demo-tick-3">Hierarchy</span>
-          <span class="demo-tick demo-tick-4">Chat</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="demo-fineprint">
-      The clip above is an in-page mockup, not a real screen recording. The actual app
-      looks the same — <a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">clone the repo</a> and run it locally to see your own data flowing through these screens.
-    </p>
-  </section>
-
-  <!-- Workflow -->
-  <section id="workflow" class="fade-in">
-    <h2>The daily workflow</h2>
-    <p>Three things, in order. Everything else is on top.</p>
-
-    <div class="workflow-grid">
-      <div class="workflow-step">
-        <div class="workflow-num">1</div>
-        <h3>Start a session</h3>
-        <p>
-          A session is a window of time you care about together &mdash; usually an academic quarter
-          or a work cycle. You pick the year and the season, the app figures out the date range,
-          and that&rsquo;s the bucket all your data lands in. Returning users can import a CSV
-          instead of starting fresh.
-        </p>
-      </div>
-      <div class="workflow-step">
-        <div class="workflow-num">2</div>
-        <h3>Log time as it happens</h3>
-        <p>
-          Hit play on a category and the timer runs. Pause for breaks, resume when you&rsquo;re back,
-          stop when you&rsquo;re done &mdash; you get prompted for a description and location at
-          the end. Forgot to start a timer earlier today? Drop in a Manual Entry with a date and
-          minutes. Both produce the same kind of data.
-        </p>
-      </div>
-      <div class="workflow-step">
-        <div class="workflow-num">3</div>
-        <h3>Get answers, not data</h3>
-        <p>
-          The Analytics page lets you slice your time at every scale &mdash; today, this week,
-          this session, all-time, by category or by family. The Chat page lets you skip charts
-          entirely and just ask. The Projects page tells you what each of your ongoing projects
-          looked like quarter-by-quarter.
-        </p>
-      </div>
+  <!-- ── Intro ──────────────────────────────────────────── -->
+  <section class="band">
+    <div class="container narrow">
+      <p class="intro reveal">
+        It started as three years of spreadsheets and a Jupyter notebook. log(ger) keeps the
+        idea &mdash; every minute is worth logging &mdash; and turns it into something you&rsquo;d
+        actually want to open: <strong>you hit start, do the work, hit stop</strong>, and the
+        dashboards, streaks, and answers all fall out of that one habit.
+      </p>
     </div>
   </section>
 
-  <!-- Features -->
-  <section id="features" class="fade-in">
-    <h2>What you can do</h2>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-timer">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  <!-- ── Row 1 · Capture ────────────────────────────────── -->
+  <section class="band alt">
+    <div class="container">
+      <div class="frow">
+        <div class="frow-media">
+          <div class="viz viz-timer reveal">
+            <div class="vt-row"><span class="vt-dot"></span><span class="vt-name">Salk Research</span><span class="vt-clock"><span class="counter" data-to="14" data-suffix="m">0m</span></span></div>
+            <div class="vt-row vt-row2"><span class="vt-dot"></span><span class="vt-name">Writing</span><span class="vt-clock">live</span></div>
+            <div class="vt-bar"><i></i></div>
+          </div>
+          <div class="viz viz-break reveal">
+            <div class="vb-week">
+              <span class="vb-day on"></span><span class="vb-day on"></span>
+              <span class="vb-day rest">🌴</span><span class="vb-day rest">🌴</span>
+              <span class="vb-day on"></span><span class="vb-day on"></span><span class="vb-day on"></span>
+            </div>
+            <div class="vb-bridge"></div>
+            <div class="vb-flag">🔥 streak kept</div>
+          </div>
         </div>
-        <h3>Real-time timers</h3>
-        <p>Start, pause, stop. Run several at once if you need to (a meeting and a recording session in parallel). All timestamps auto-round to the nearest minute so your data stays honest.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-data">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-        </div>
-        <h3>Manual entry</h3>
-        <p>The escape hatch for the time you didn&rsquo;t time. Pick a date, a category, the minutes, and a note. Treated identically to timer data downstream.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-analytics">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        </div>
-        <h3>Analytics that adapt</h3>
-        <p>Stacked area charts, category breakdowns, weekly heatmaps, side-by-side session comparisons. One control changes the time scale (overall / year / month / week) and every chart re-fits.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-chat">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-        </div>
-        <h3>Ask your own data</h3>
-        <p>An AI chat tied to Claude that has read-only access to your sessions. Ask &ldquo;what did I work on most in Spring 2025?&rdquo; or &ldquo;summarize my year.&rdquo; Every API call surfaces a tiny approval card &mdash; nothing leaves the app silently.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-projects">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-        </div>
-        <h3>Projects over time</h3>
-        <p>A bubble visualization where the biggest circles are Groups, the next layer is Families, and the leaves are individual sessions. You can see &mdash; literally see &mdash; what you actually spent your year on.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon feature-icon-theme">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16v3a2 2 0 002 2h14a2 2 0 002-2v-3M16 12l-4 4-4-4M12 16V4"/></svg>
-        </div>
-        <h3>Bring your history</h3>
-        <p>If you&rsquo;ve been tracking time in CSVs already, drag both files (the numbers and the notes) onto the Import page. Column variations across years, BOM bytes, inconsistent header casing &mdash; all handled.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Hierarchy -->
-  <section id="hierarchy" class="fade-in">
-    <h2>How log(ger) organizes time</h2>
-    <p>
-      Most time trackers give you one flat list of tags. That&rsquo;s fine for a week and
-      catastrophic for a year. log(ger) uses a three-level hierarchy that maps cleanly onto how
-      most people actually think about their work.
-    </p>
-
-    <div class="hierarchy-diagram">
-      <div class="hierarchy-row hierarchy-group">
-        <span class="hierarchy-label">Group</span>
-        <div class="hierarchy-chips">
-          <span class="chip chip-research">Research</span>
-          <span class="chip chip-training">Training</span>
-          <span class="chip chip-personal">Personal</span>
-          <span class="chip chip-courses">Courses</span>
-        </div>
-      </div>
-      <div class="hierarchy-row hierarchy-family">
-        <span class="hierarchy-label">Family</span>
-        <div class="hierarchy-chips">
-          <span class="chip chip-fam">Salk</span>
-          <span class="chip chip-fam">MPI</span>
-          <span class="chip chip-fam">SWL</span>
-          <span class="chip chip-fam">FMP</span>
-          <span class="chip chip-fam">PP</span>
-          <span class="chip chip-fam">COGS</span>
-          <span class="chip chip-fam">CSE</span>
-          <span class="chip chip-fam">DSC</span>
-        </div>
-      </div>
-      <div class="hierarchy-row hierarchy-category">
-        <span class="hierarchy-label">Category</span>
-        <div class="hierarchy-chips">
-          <span class="chip chip-cat">Salk &middot; Spring 2026</span>
-          <span class="chip chip-cat">COGS 118C &middot; Winter 2026</span>
-          <span class="chip chip-cat">Training &middot; Fall 2024</span>
-          <span class="chip chip-cat">PP &middot; Summer 2024</span>
-          <span class="chip chip-cat">+ many more</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="hierarchy-explainer">
-      <div class="explainer-card">
-        <h4>A Group is the kind of thing</h4>
-        <p>Research, courses, personal work, training. Four buckets by default; you can add more. This is the level you reason at when you ask &ldquo;was that a good week?&rdquo;</p>
-      </div>
-      <div class="explainer-card">
-        <h4>A Family is the thread that runs through</h4>
-        <p>Your <code>Salk</code> family is the same project whether you&rsquo;re in Spring 2025 or Fall 2026. Department codes like <code>CSE</code> are families that catch every course in that department automatically.</p>
-      </div>
-      <div class="explainer-card">
-        <h4>A Category is one session&rsquo;s slice</h4>
-        <p>The actual line item you log against, scoped to one session. The same family lives in many sessions as different categories. Auto-matching means new categories find their family on import.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Data → Insight -->
-  <section id="data-to-insight" class="fade-in">
-    <h2>From a stopwatch to insight</h2>
-    <p>
-      Every feature in log(ger) is downstream of the same simple act: a category accumulating
-      minutes during a session. Here&rsquo;s what gets built on top.
-    </p>
-
-    <div class="flow-diagram">
-      <div class="flow-step">
-        <div class="flow-step-tag">SOURCE</div>
-        <h4>Timer or manual entry</h4>
-        <p>You log time against a category. Minutes accumulate.</p>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step">
-        <div class="flow-step-tag">AGGREGATE</div>
-        <h4>Observations &amp; daily totals</h4>
-        <p>The DB rolls up entries into per-day-per-category numbers.</p>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step">
-        <div class="flow-step-tag">SHAPE</div>
-        <h4>Group &middot; Family &middot; Category</h4>
-        <p>Same numbers, indexed three ways. Same data, three lenses.</p>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step">
-        <div class="flow-step-tag">SURFACE</div>
-        <h4>Dashboards &middot; Charts &middot; Chat</h4>
-        <p>Every view is a different cross-section of that same shape.</p>
-      </div>
-    </div>
-
-    <p class="flow-postscript">
-      That&rsquo;s why adding a new chart or a new question to the chat doesn&rsquo;t require new
-      logging behavior on your side. The data is the same; the questions are just different
-      cuts of it.
-    </p>
-  </section>
-
-
-  <!-- Getting Started -->
-  <section id="getting-started" class="fade-in">
-    <h2>Run it locally</h2>
-    <p>
-      log(ger) runs in two flavors — pick whichever fits. Both use the same code and
-      the same on-disk database; the only differences are how the UI is served and
-      whether you get a real <code>.app</code> in your Dock.
-    </p>
-
-    <div class="run-modes">
-      <div class="run-mode run-mode-app">
-        <div class="run-mode-tag">Recommended</div>
-        <h3>🖥️ Mac app</h3>
-        <p>Native window via WKWebView, no terminals after the build, DB at
-          <code>~/Library/Application&nbsp;Support/Logger/</code>. Double-click to launch.
-        </p>
-        <ul class="run-mode-bullets">
-          <li>Best for using the tool day-to-day.</li>
-          <li>One-time build (~30s), then <code>open dist/Logger.app</code>.</li>
-          <li>FastAPI + SvelteKit bundled together on one ephemeral port.</li>
-        </ul>
-      </div>
-      <div class="run-mode run-mode-dev">
-        <div class="run-mode-tag">For hackers</div>
-        <h3>🌐 Browser dev mode</h3>
-        <p>Two terminals with hot-reload — backend on <code>:8000</code>, Vite on
-          <code>:5173</code>. DB at <code>./logger.db</code> in the repo (separate from the app's data).
-        </p>
-        <ul class="run-mode-bullets">
-          <li>Best for tweaking the code (HMR on Svelte + Python).</li>
-          <li>Open <a href="#dev-setup">http://localhost:5173</a> in your browser, not the backend port.</li>
-          <li>No PyInstaller build needed.</li>
-        </ul>
-      </div>
-    </div>
-
-    <h3>Build the Mac app</h3>
-    <p>
-      Recommended path. Builds from source on your own machine, no external download.
-    </p>
-
-    <div class="install-steps">
-      <div class="install-step">
-        <div>
-          <p><strong>1. One-time prerequisites</strong></p>
-          <pre><code>brew install uv pnpm node@22
-brew unlink node 2>/dev/null
-brew link --overwrite --force node@22</code></pre>
+        <div class="frow-text reveal">
+          <span class="kicker">Capture</span>
+          <h3>Start, work, stop.</h3>
           <p>
-            uv (Python), pnpm (Node), <strong>Node 22.13+</strong> &mdash; older Node will fail with
-            <code>ERR_UNKNOWN_BUILTIN_MODULE: node:sqlite</code> on <code>pnpm install</code>.
-            The <code>brew link</code> step ensures <code>node --version</code> resolves to 22.
+            Hit play on a category and the clock runs &mdash; pause for a coffee, resume, stop when
+            you&rsquo;re done. Run a few timers at once, and everything rounds to the honest minute.
+            Forgot to start one? A <strong>manual entry</strong> backfills the time after the fact.
+            And when you take a day off, mark it a <strong>break</strong>: it logs nothing, yet your
+            streak bridges right over it.
           </p>
         </div>
       </div>
-      <div class="install-step">
-        <div>
-          <p><strong>2. Clone &amp; install deps</strong></p>
-          <pre><code>git clone https://github.com/KevinBian107/logger.git
-cd logger
+    </div>
+  </section>
+
+  <!-- ── Row 2 · Review ─────────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <div class="frow reverse">
+        <div class="frow-media">
+          <div class="viz viz-line reveal">
+            <div class="vl-axis"></div>
+            <span class="vl-block vl-b1"></span>
+            <span class="vl-block vl-b2"></span>
+            <span class="vl-block vl-b3"></span>
+          </div>
+          <div class="viz viz-streak reveal">
+            <div class="vs-dots">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="vs-count">🔥 <span class="counter" data-to="14" data-suffix="d">0d</span></div>
+          </div>
+        </div>
+        <div class="frow-text reveal">
+          <span class="kicker">Review</span>
+          <h3>Replay any day.</h3>
+          <p>
+            Every entry lands as a colored block across the day, start to end. Scrub back to any
+            past date and the whole dashboard <strong>rewinds with it</strong> &mdash; and stays
+            there as you move between pages. Down the side, a <strong>streak</strong> counts the
+            days you showed up, quietly stepping over the breaks you planned.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Row 3 · Analyze ────────────────────────────────── -->
+  <section class="band alt">
+    <div class="container">
+      <div class="frow">
+        <div class="frow-media">
+          <div class="viz viz-scale reveal">
+            <div class="vsc-seg">
+              <span>Overall</span><span>Year</span><span>Month</span><span class="on">Week</span>
+              <i class="vsc-pill"></i>
+            </div>
+            <div class="vsc-bars"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="viz viz-heat reveal">
+            <div class="vh-grid">
+              <i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l1"></i><i class="l3"></i>
+              <i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l1"></i>
+              <i class="l3"></i><i class="l2"></i><i class="l1"></i><i class="l4"></i><i class="l3"></i><i class="l2"></i><i class="l4"></i>
+            </div>
+          </div>
+        </div>
+        <div class="frow-text reveal">
+          <span class="kicker">Analyze</span>
+          <h3>One control, every scale.</h3>
+          <p>
+            Flip a single control between <strong>overall, year, month, and week</strong> and every
+            chart re-fits to match. A weekly heatmap shows the rhythm of your effort at a glance,
+            and you can stack whole quarters side by side &mdash; by group &mdash; to see where each
+            one actually went.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Row 4 · Organize ───────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <div class="frow reverse">
+        <div class="frow-media">
+          <div class="viz viz-tree reveal">
+            <span class="vtr g">Research</span>
+            <div class="vtr-row"><span class="vtr f">Salk</span><span class="vtr f">MPI</span><span class="vtr f">SWL</span></div>
+            <div class="vtr-row"><span class="vtr c">Salk · S26</span><span class="vtr c">MPI · Su24</span></div>
+          </div>
+          <div class="viz viz-match reveal">
+            <span class="vmt-loose">Salk · Fall 2026</span>
+            <span class="vmt-arrow">→</span>
+            <span class="vmt-bucket">Salk family</span>
+          </div>
+        </div>
+        <div class="frow-text reveal">
+          <span class="kicker">Organize</span>
+          <h3>Filed the way you think.</h3>
+          <p>
+            Flat tags collapse over a year. log(ger) uses three levels instead &mdash; a
+            <strong>group</strong> (the kind of work), a <strong>family</strong> (the thread that
+            runs through it), and a <strong>category</strong> (one session&rsquo;s slice). New
+            categories file themselves: on import they snap to the right family by exact or prefix
+            rules, so you never sort by hand.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Row 5 · Explore & ask ──────────────────────────── -->
+  <section class="band alt">
+    <div class="container">
+      <div class="frow">
+        <div class="frow-media">
+          <div class="viz viz-chat reveal">
+            <div class="vch-q">How much research this quarter?</div>
+            <div class="vch-ok">Approve ✓</div>
+            <div class="vch-a"><strong>52h 15m</strong> — 41% Salk.</div>
+          </div>
+          <div class="viz viz-bubbles reveal">
+            <span class="vbb b1">Salk</span>
+            <span class="vbb b2">MPI</span>
+            <span class="vbb b3">COGS</span>
+            <span class="vbb b4">PP</span>
+            <span class="vbb b5">SWL</span>
+          </div>
+        </div>
+        <div class="frow-text reveal">
+          <span class="kicker">Explore &amp; ask</span>
+          <h3>See it, then just ask.</h3>
+          <p>
+            A bubble map shows your projects breathing across sessions &mdash; the biggest circles
+            the things you gave the most to. When charts aren&rsquo;t enough, ask in plain language:
+            an assistant tied to <strong>Claude</strong> reads your sessions and answers, with every
+            call gated behind a one-tap approval. Link a GitHub repo and your summaries even pull in
+            real commit context.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Row 6 · Own it ─────────────────────────────────── -->
+  <section class="band">
+    <div class="container">
+      <div class="frow reverse">
+        <div class="frow-media">
+          <div class="viz viz-csv reveal">
+            <div class="vcs-files"><span>study.csv</span><span>text.csv</span></div>
+            <div class="vcs-fan"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="viz viz-port reveal">
+            <span class="vp-file">🗄 logger.db</span>
+            <span class="vp-snap">↓ snapshot.db</span>
+          </div>
+        </div>
+        <div class="frow-text reveal">
+          <span class="kicker">Own it</span>
+          <h3>All of it, on one file.</h3>
+          <p>
+            Everything lives in a single SQLite file on your machine &mdash; no cloud, no accounts.
+            Bring years of history in by dropping a <strong>CSV pair</strong> onto the import page;
+            it fans out across six tables in one transaction, messy headers and all. Download a
+            snapshot whenever you want, or load one back.
+          </p>
+          <p class="band-tail">
+            Curious how that file changes as you work?
+            <a href="under-the-hood.html">Go under the hood &rarr;</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Get it ─────────────────────────────────────────── -->
+  <section class="band alt" id="get-it">
+    <div class="container narrow">
+      <h2 class="reveal">Run it locally</h2>
+      <p class="section-lede reveal">
+        Builds from source into a real <code>.app</code>. Needs
+        <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener">uv</a>,
+        <a href="https://pnpm.io/" target="_blank" rel="noopener">pnpm</a>, and Node 22+.
+      </p>
+      <div class="code-card reveal">
+<pre><code>git clone https://github.com/KevinBian107/logger.git &amp;&amp; cd logger
 uv sync --project backend --extra macapp
-pnpm --dir frontend install</code></pre>
-          <p>The <code>macapp</code> extra adds <code>pywebview</code> + PyInstaller. The <code>--project backend</code> flag tells uv where <code>pyproject.toml</code> lives.</p>
-        </div>
+pnpm --dir frontend install &amp;&amp; pnpm --dir frontend build
+uv run --project backend python scripts/build_macapp.py
+open dist/Logger.app</code></pre>
       </div>
-      <div class="install-step">
-        <div>
-          <p><strong>3. Build the app bundle</strong></p>
-          <pre><code>pnpm --dir frontend build
-uv run --project backend python scripts/build_macapp.py</code></pre>
-          <p>Output: <code>dist/Logger.app</code> (~65 MB, includes the FastAPI backend + static SvelteKit frontend + a WKWebView shell).</p>
-        </div>
-      </div>
-      <div class="install-step">
-        <div>
-          <p><strong>4. Launch</strong></p>
-          <pre><code>open dist/Logger.app</code></pre>
-          <p>If Gatekeeper objects on first launch:</p>
-          <pre><code>xattr -dr com.apple.quarantine dist/Logger.app</code></pre>
-          <p>Drag the app to <code>/Applications</code> if you'd like it permanent.</p>
-        </div>
-      </div>
+      <p class="section-lede reveal">
+        Prefer hot-reload? Browser dev mode and CSV import are in the
+        <a href="https://github.com/KevinBian107/logger#readme" target="_blank" rel="noopener">README</a>.
+      </p>
     </div>
-
-    <p class="getting-started-aside">
-      <strong>First-launch flow.</strong>
-      DB is empty on first run. On the <em>Data</em> tab, create a new session
-      (pick a year + season). Add a few categories. Hit play on the dashboard's
-      Quick Start to begin logging. Optional: paste an Anthropic API key in
-      <em>Settings</em> to unlock the AI chat assistant. Have old CSV data?
-      Drop the pair onto the Data tab's <em>Import</em> dropzone.
-    </p>
-
-    <h3 id="dev-setup">Or: run in the browser (dev mode)</h3>
-    <p>
-      Pick this path if you're hacking on the code. You skip the PyInstaller build
-      entirely &mdash; the backend runs in uvicorn's reload mode and Vite serves the SvelteKit
-      frontend with HMR. Two terminals, both with live-reload.
-    </p>
-
-    <div class="install-steps">
-      <div class="install-step">
-        <div>
-          <p><strong>Terminal 1 &mdash; backend on :8000</strong></p>
-          <pre><code>cd backend
-uv sync
-uv run uvicorn logger.main:app --reload --port 8000</code></pre>
-        </div>
-      </div>
-      <div class="install-step">
-        <div>
-          <p><strong>Terminal 2 &mdash; frontend on :5173</strong></p>
-          <pre><code>cd frontend
-pnpm install
-pnpm dev</code></pre>
-        </div>
-      </div>
-      <div class="install-step">
-        <div>
-          <p><strong>Open the UI</strong></p>
-          <pre><code>open http://localhost:5173</code></pre>
-          <p>
-            Open <strong>:5173</strong> (the frontend), not <strong>:8000</strong> (the backend &mdash; that one
-            returns 404 on <code>/</code> because it only serves <code>/api/*</code>). The Vite dev server
-            proxies API calls to the backend automatically.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <p class="getting-started-aside">
-      <strong>Two databases.</strong> Dev mode reads/writes <code>./logger.db</code> in your
-      repo checkout; the packaged Mac app reads/writes
-      <code>~/Library/Application&nbsp;Support/Logger/logger.db</code>. They're independent.
-      Use <em>Settings → Database → Download current</em> in one mode and
-      <em>Choose .db file</em> in the other to copy data between them.
-    </p>
-
-    <p class="built-with-note">
-      Built with SvelteKit, FastAPI, SQLite, D3, PyWebView, and the Claude API.
-      Development was driven by
-      <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Propel</a> &mdash;
-      a structured workflow for AI-assisted coding.
-    </p>
-  </section>
-
-  <!-- Acknowledgments -->
-  <section id="acknowledgments" class="fade-in">
-    <h2>Credits</h2>
-    <ul class="ack-list">
-      <li><a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener"><strong>Chatable-Study-Database</strong></a> &mdash; The Python/Jupyter ancestor. Same goal, less polish.</li>
-      <li><a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener"><strong>Propel</strong></a> &mdash; The workflow framework used to build this with Claude Code.</li>
-      <li><a href="https://github.com/KevinBian107/code-manual" target="_blank" rel="noopener"><strong>Code Manual</strong></a> &mdash; Methodology notes for AI-assisted development.</li>
-    </ul>
   </section>
 
 </main>
 
 <footer>
-  <div class="container">
-    <p>log(ger) is open source under the <a href="https://github.com/KevinBian107/logger/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
-    <p>Built by <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>, <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>, and <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>.</p>
+  <div class="container footer-inner">
+    <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+    <p>
+      MIT licensed. Built by
+      <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>,
+      <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>,
+      and <a href="https://rcwoshimaodev.vercel.app/" target="_blank" rel="noopener">Jiaying Chen</a>
+      with <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Propel</a>.
+    </p>
   </div>
 </footer>
 
