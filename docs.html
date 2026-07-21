@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>log(ger) &mdash; Documentation</title>
+  <meta name="description" content="How log(ger) works: planning, recording time, analyzing it, the AI chat, and the local database underneath all of it — one page, every part of the app." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('logger-theme') || 'dark';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-brand">
+      <img src="favicon.svg" alt="" width="26" height="26" />
+      <span class="wordmark">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#loop">How it works</a>
+      <a href="index.html#analyze">Analyze</a>
+      <a href="index.html#chat">Ask it</a>
+      <a href="docs.html">Docs</a>
+    </div>
+    <div class="nav-cta">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a class="nav-gh" href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener" aria-label="View source on GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="index.html#get-it">Run it locally</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container docs-header">
+    <a href="index.html" class="back-link reveal">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.5 3.5L7 8l4.5 4.5-1 1L5 8l5.5-5.5z"/></svg>
+      Back to overview
+    </a>
+    <h1>Documentation</h1>
+    <p>Everything log(ger) does, in one page: how planning and tracking fit together, what the
+      dashboard is actually showing you, how the chat stays grounded and safe, and &mdash; down
+      in Data &amp; database &mdash; exactly how it&rsquo;s all stored on your machine.</p>
+  </div>
+
+  <div class="container docs-shell">
+    <aside class="docs-sidebar">
+      <div>
+        <div class="docs-nav-label">Documentation</div>
+        <nav class="docs-nav">
+          <a href="#overview" data-toc-link>Overview</a>
+          <a href="#planning" data-toc-link>Planning</a>
+          <a href="#recording" data-toc-link>Recording time</a>
+          <a href="#analyzing" data-toc-link>Analyzing</a>
+          <a href="#chat-projects" data-toc-link>Chat &amp; projects</a>
+          <a href="#data" data-toc-link>Data &amp; database</a>
+          <a href="#reference" data-toc-link>Reference</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="docs-content">
+
+      <!-- ── Overview ─────────────────────────────────────── -->
+      <section class="doc-section" id="overview">
+        <h2>What log(ger) is</h2>
+        <p class="doc-lede">
+          log(ger) is a free, local productivity app built around one loop: <strong>plan</strong>
+          what you mean to work on, <strong>track</strong> it as you actually do it, and
+          <strong>analyze</strong> the result until it tells you something. All three share the
+          same data, and all of it lives in a single SQLite file on your machine &mdash; there is
+          no server, no account, and no sync.
+        </p>
+        <div class="doc-grid">
+          <a class="doc-card" href="#planning" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5"/></svg>
+            </div>
+            <h4>Planner</h4>
+            <p>A drag-and-drop timeline for scheduling work ahead of time.</p>
+          </a>
+          <a class="doc-card" href="#recording" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+            </div>
+            <h4>Recorder</h4>
+            <p>Timers, manual entries, and breaks &mdash; the dashboard where time gets logged.</p>
+          </a>
+          <a class="doc-card" href="#analyzing" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <h4>Analytics</h4>
+            <p>Charts, heatmaps, and streaks that rescale from a week to your whole history.</p>
+          </a>
+          <a class="doc-card" href="#chat-projects" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            </div>
+            <h4>Chat &amp; projects</h4>
+            <p>Ask questions about your own data, and watch projects evolve across sessions.</p>
+          </a>
+          <a class="doc-card" href="#data" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+            </div>
+            <h4>Data &amp; database</h4>
+            <p>CSV import, category families, and the exact SQLite schema underneath.</p>
+          </a>
+          <a class="doc-card" href="#reference" style="text-decoration:none;">
+            <div class="doc-card-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <h4>Reference</h4>
+            <p>Settings, the Claude API key, backups, and honest limitations.</p>
+          </a>
+        </div>
+        <h3>Running it</h3>
+        <p>log(ger) builds from source into a real <code>.app</code> &mdash; there&rsquo;s nothing to sign up for. See <a href="index.html#get-it">Run it locally</a> on the overview page for the exact commands.</p>
+      </section>
+
+      <!-- ── Planning ─────────────────────────────────────── -->
+      <section class="doc-section" id="planning">
+        <h2>Planning</h2>
+        <p class="doc-lede">
+          The Planner is a horizontal, scrollable timeline &mdash; today marked with a guide
+          line, days as columns, plan items as colored bars. It&rsquo;s where you decide what
+          you&rsquo;re going to work on before you sit down to do it.
+        </p>
+        <h3>Creating and shaping a plan</h3>
+        <p>Drag across empty days to block out a new item, or use the <strong>+ New</strong> button to add one on today without dragging. Once an item exists, drag its <strong>body</strong> to move it to different days, or drag either <strong>edge</strong> to lengthen or shorten it &mdash; useful for a task that&rsquo;s going to take a few days, not one sitting. A plan item can carry a specific time of day, but only while it&rsquo;s still a single day; stretch it across multiple days and the time-of-day is dropped, since it stops meaning anything.</p>
+        <p>Every plan item belongs to a <strong>category</strong> (the same categories you log time against) and can carry a <strong>priority</strong> &mdash; low, medium, or high &mdash; shown as a small flag on the bar so the things that matter don&rsquo;t get lost in the schedule.</p>
+        <h3>Starting and closing a plan</h3>
+        <p>Open a plan item and hit <strong>Start timer</strong> and a real timer starts, linked back to that plan &mdash; it shows up on the Recorder dashboard exactly like any other timer. You can also <strong>log time</strong> against a plan after the fact, with the category pre-filled from the plan itself.</p>
+        <div class="doc-note">
+          <span class="doc-note-ic">💡</span>
+          <p>Closing a session does <strong>not</strong> automatically mark the plan complete. A multi-day task is expected to collect several sessions before it&rsquo;s actually done, so completion is a separate, explicit checkbox (&ldquo;Mark plan complete&rdquo;) you tick only when you mean it.</p>
+        </div>
+        <h3>Filtering the timeline</h3>
+        <p class="doc-muted">Filter the visible plan items by category, priority, or completion state &mdash; useful once the timeline fills up with more than a week or two of plans.</p>
+      </section>
+
+      <!-- ── Recording time ──────────────────────────────── -->
+      <section class="doc-section" id="recording">
+        <h2>Recording time</h2>
+        <p class="doc-lede">
+          The Recorder (log(ger)&rsquo;s dashboard) is where time actually gets logged, whether
+          or not it started from a plan.
+        </p>
+        <h3>Timers</h3>
+        <p>Pick a category and hit play &mdash; the clock runs, and you can pause, resume, or stop it whenever. Run several timers in parallel if you&rsquo;re genuinely switching between things. Every stopped timer rounds to the nearest honest minute.</p>
+        <h3>Manual entries</h3>
+        <p>Forgot to start a timer? A manual entry backfills the time after the fact &mdash; category, duration, and an optional description. You can also give it a specific <strong>start time</strong> to place it correctly on the day&rsquo;s timeline instead of leaving it inferred from when you happened to log it.</p>
+        <h3>Breaks</h3>
+        <p>Mark a day, or a range of days, as a break. A break logs <strong>no time</strong> &mdash; it&rsquo;s a neutral marker &mdash; but it bridges your streak, so a planned rest never resets a run you&rsquo;ve been building. The date picker highlights break days so you can see them at a glance when picking a date.</p>
+        <h3>Late nights</h3>
+        <p class="doc-muted">Logging something at 1am that really belongs to &ldquo;yesterday&rdquo;? Between midnight and 5am, log(ger) asks which day a new entry should count toward, so a late night doesn&rsquo;t silently file itself under the wrong date.</p>
+      </section>
+
+      <!-- ── Analyzing ────────────────────────────────────── -->
+      <section class="doc-section" id="analyzing">
+        <h2>Analyzing</h2>
+        <p class="doc-lede">
+          Everything you log rolls up into the Analytics page, built around one idea: the same
+          charts should work whether you&rsquo;re looking at last week or your entire history.
+        </p>
+        <h3>One control, every scale</h3>
+        <p>A single filter switches every chart on the page between <strong>overall, year, month, and week</strong> &mdash; a stacked area chart of time by category, a category breakdown, a weekly heatmap, and a session-by-session comparison grouped by family, all re-fit to whatever range you pick.</p>
+        <h3>Streaks</h3>
+        <p class="doc-muted">A streak counts consecutive days with logged time, walking backward from today. Break days don&rsquo;t count toward it, but they don&rsquo;t reset it either &mdash; the streak simply steps over them.</p>
+        <h3>The daily timeline</h3>
+        <p class="doc-muted">The Recorder dashboard also shows today (or any past day you scrub back to) as a Gantt-style row of colored blocks, one per entry, sized by how long it actually ran.</p>
+      </section>
+
+      <!-- ── Chat & Projects ──────────────────────────────── -->
+      <section class="doc-section" id="chat-projects">
+        <h2>Chat &amp; projects</h2>
+        <p class="doc-lede">
+          Two ways to step back from the raw log: ask about it directly, or watch a single line
+          of work evolve across sessions.
+        </p>
+        <h3>Chat</h3>
+        <p>The chat is powered by the <strong>Claude API</strong> and reads your own sessions to answer &mdash; it doesn&rsquo;t know anything you haven&rsquo;t logged. Every query it wants to run against your data is shown to you first and requires a one-tap <strong>approval</strong> before it executes; nothing runs silently in the background. You&rsquo;ll need your own Claude API key (see Reference), and you can pick which model to use.</p>
+        <h3>Projects</h3>
+        <p>A <strong>family</strong> &mdash; a project or thread of work that spans multiple sessions, like &ldquo;Salk Research&rdquo; across three quarters &mdash; gets its own timeline here: total time, active days, and an AI-generated summary per session. Research families can link a GitHub repository, and their summaries pull in real recent commits for extra context.</p>
+      </section>
+
+      <!-- ── Data & database ──────────────────────────────── -->
+      <section class="doc-section" id="data">
+        <h2>Data &amp; database</h2>
+        <p class="doc-lede">
+          No server, no sync &mdash; log(ger) is one SQLite file on your disk. This section is
+          the honest, complete picture: how categories are organized, how a CSV import lands,
+          and exactly how the schema is shaped underneath every screen above.
+        </p>
+        <p class="uth-path"><code>~/Library/Application&nbsp;Support/Logger/logger.db</code> in the packaged app &middot; <code>./logger.db</code> in dev</p>
+
+        <h3>Importing legacy data</h3>
+        <p>Drop a <strong>CSV pair</strong> (a timesheet + a notes file) onto the import page and it fans out across the database in a single transaction &mdash; sessions, categories, daily totals, and text notes all land together, messy headers and all. New categories snap to the right family automatically, matched by exact name or prefix rule, so you don&rsquo;t sort a year of history by hand.</p>
+
+        <h3>The category hierarchy</h3>
+        <p>Flat tags collapse over a year of use, so log(ger) uses three levels instead: a <strong>group</strong> (the kind of work &mdash; Research, Courses, Personal), a <strong>family</strong> (the thread that runs through it &mdash; &ldquo;Salk&rdquo;, &ldquo;MPI&rdquo;), and a <strong>category</strong> (one session&rsquo;s slice of that family, like <code>salk_spring26</code>). Plan items and logged entries both point at a category; families are what let the Projects view stitch those categories back together across sessions.</p>
+
+        <h3>One file, four levels</h3>
+        <p class="doc-muted">The core is a single chain: a group holds families, a family holds per-session categories, a category holds the entries you log. The planner hangs off the same categories.</p>
+        <div class="schema reveal">
+          <div class="schema-chain">
+            <span class="sc-box sc-g">category_groups<small>Research · Courses · Personal</small></span>
+            <span class="sc-rel">1&rarr;N</span>
+            <span class="sc-box sc-f">category_families<small>Salk · MPI · COGS…</small></span>
+            <span class="sc-rel">1&rarr;N</span>
+            <span class="sc-box sc-c">categories<small>one per session</small></span>
+            <span class="sc-rel">1&rarr;N</span>
+            <span class="sc-box sc-e">timer_entries<br/>manual_entries<small>the minutes</small></span>
+          </div>
+          <p class="schema-aux-label">Plus the planner, hanging off the same categories</p>
+          <div class="schema-aux">
+            <span>plan_items.category_id &rarr; categories</span>
+            <span>timer_entries.plan_item_id &rarr; plan_items</span>
+            <span>manual_entries.plan_item_id &rarr; plan_items</span>
+          </div>
+        </div>
+
+        <h3>Every table, the columns that matter</h3>
+        <p class="doc-muted">Twelve core tables. <span class="k-pk">id</span> is the primary key everywhere; <span class="k-fk">→</span> marks a foreign key.</p>
+        <div class="tbl-grid">
+          <article class="tbl-card reveal sc-g">
+            <header>sessions</header>
+            <ul><li>year, season, label</li><li>start_date, end_date</li><li>is_active</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-g">
+            <header>category_groups</header>
+            <ul><li>name, display_name</li><li>color, position</li><li>is_system</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-f">
+            <header>category_families</header>
+            <ul><li>name, display_name, color</li><li class="fk">group_id → groups</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-c">
+            <header>categories</header>
+            <ul><li>name, display_name</li><li class="fk">session_id → sessions</li><li class="fk">family_id → families</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-e">
+            <header>timer_entries</header>
+            <ul><li class="fk">session_id, category_id</li><li>date, start_time, end_time</li><li>duration_minutes, is_paused</li><li class="fk">plan_item_id → plan_items</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-e">
+            <header>manual_entries</header>
+            <ul><li class="fk">session_id, category_id</li><li>date, duration_minutes</li><li>description, start_time</li><li class="fk">plan_item_id → plan_items</li></ul>
+          </article>
+          <article class="tbl-card reveal sc-p">
+            <header>plan_items</header>
+            <ul><li>title, notes, status</li><li>start_date, end_date</li><li>start_time, end_time, importance</li><li class="fk">category_id → categories</li></ul>
+          </article>
+          <article class="tbl-card reveal">
+            <header>daily_records</header>
+            <ul><li class="fk">session_id → sessions</li><li>date, week_number</li><li>total_minutes</li></ul>
+          </article>
+          <article class="tbl-card reveal">
+            <header>observations</header>
+            <ul><li class="fk">daily_record_id, category_id</li><li>minutes</li><li>source (import/timer/manual)</li></ul>
+          </article>
+          <article class="tbl-card reveal">
+            <header>break_days</header>
+            <ul><li>date (unique)</li><li>label</li></ul>
+          </article>
+          <article class="tbl-card reveal">
+            <header>family_match_rules</header>
+            <ul><li class="fk">family_id → families</li><li>match_type (exact / prefix)</li><li>pattern</li></ul>
+          </article>
+          <article class="tbl-card reveal">
+            <header>text_entries</header>
+            <ul><li class="fk">session_id → sessions</li><li>date, location</li><li>notes, study_materials</li></ul>
+          </article>
+        </div>
+
+        <h3>Watch a write land</h3>
+        <p class="doc-muted">Stop a 45-minute timer and three tables change in one transaction &mdash; the entry is recorded, the per-day-per-category aggregate is upserted, and the day&rsquo;s total recomputes. Charts read the aggregate, never the raw rows.</p>
+        <div class="db-flow reveal" id="dbflow">
+          <button class="db-replay" data-replay="#dbflow" type="button">↻ Replay</button>
+          <div class="db-tables">
+            <div class="db-tbl">
+              <div class="db-tbl-h">timer_entries <span class="db-op">INSERT</span></div>
+              <div class="db-row db-faint"><span>May 25</span><span>Salk</span><span>earlier</span></div>
+              <div class="db-row db-new"><span>May 25</span><span>Salk</span><span>45m</span></div>
+            </div>
+            <div class="db-arrow">&rarr;</div>
+            <div class="db-tbl">
+              <div class="db-tbl-h">observations <span class="db-op">UPSERT</span></div>
+              <div class="db-row db-up"><span>May 25 · Salk</span><span class="db-val"><span class="counter" data-from="120" data-to="165" data-suffix="m">120m</span></span></div>
+            </div>
+            <div class="db-arrow">&rarr;</div>
+            <div class="db-tbl">
+              <div class="db-tbl-h">daily_records <span class="db-op">RECOMPUTE</span></div>
+              <div class="db-row db-total"><span>May 25 total</span><span class="db-val"><span class="counter" data-from="200" data-to="245" data-suffix="m">200m</span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Every other change, same discipline</h3>
+        <div class="op-grid">
+          <article class="op-card reveal">
+            <h3>Add a manual entry</h3>
+            <div class="op-tables"><span>manual_entries +1</span><span>observations ↑</span><span>daily_records ↻</span></div>
+            <p>Insert, then the same upsert-and-recompute as a timer stop. Identical downstream.</p>
+          </article>
+          <article class="op-card reveal">
+            <h3>Edit an entry</h3>
+            <div class="op-tables"><span>observations −old</span><span>observations +new</span></div>
+            <p>Change the date, category, or duration and the aggregate <em>rebalances</em>: subtract from the old bucket, add to the new.</p>
+          </article>
+          <article class="op-card reveal">
+            <h3>Delete an entry</h3>
+            <div class="op-tables"><span>observations ↓</span><span>row removed</span></div>
+            <p>Subtract from the aggregate first; the observation is dropped if it hits zero. Then the row goes.</p>
+          </article>
+          <article class="op-card reveal">
+            <h3>Mark a break</h3>
+            <div class="op-tables"><span>break_days +1</span><span>no minutes</span></div>
+            <p>A date (or range) is inserted with a label. It adds no time; the streak query simply steps over it.</p>
+          </article>
+          <article class="op-card reveal">
+            <h3>Start a plan, close it later</h3>
+            <div class="op-tables"><span>timer_entries.plan_item_id</span><span>plan_items.status</span></div>
+            <p>Starting a timer from the planner just stamps the new entry with the plan&rsquo;s id &mdash; the plan stays <code>planned</code> until you explicitly check it off.</p>
+          </article>
+          <article class="op-card reveal">
+            <h3>Import a CSV pair</h3>
+            <div class="op-tables"><span>sessions</span><span>categories</span><span>daily_records</span><span>observations</span><span>text_entries</span></div>
+            <p>One file pair fans across the tables in a single transaction; new categories auto-link to families by rule.</p>
+          </article>
+        </div>
+
+        <h3>Reading it back, fast</h3>
+        <div class="read-grid">
+          <article class="read-card reveal">
+            <div class="read-ic">∑</div>
+            <h3>Pre-aggregated truth</h3>
+            <p><code>observations</code> holds minutes per day per category. Dashboards and charts query it directly.</p>
+          </article>
+          <article class="read-card reveal">
+            <div class="read-ic">⊞</div>
+            <h3>Two SQL views</h3>
+            <p><code>v_daily_totals</code> (date × category) and <code>v_family_totals</code> (family per session) pre-join the hierarchy for analytics.</p>
+          </article>
+          <article class="read-card reveal">
+            <div class="read-ic">🔥</div>
+            <h3>Streaks, break-aware</h3>
+            <p>The streak walks <code>daily_records</code> back from today; a day in <code>break_days</code> bridges the gap instead of resetting it.</p>
+          </article>
+        </div>
+
+        <h3>Why it holds up</h3>
+        <ul class="props reveal">
+          <li><strong>Aggregations are stored, not derived.</strong> <code>observations</code> is written transactionally with every entry &mdash; charts never scan raw timer or manual rows.</li>
+          <li><strong>Every mutation is transactional.</strong> Insert/upsert/recompute commit together; a failure rolls the whole thing back, so totals can&rsquo;t drift from entries.</li>
+          <li><strong>Migrations are idempotent.</strong> Every start runs <code>init_db</code>, which probes the schema before it changes anything. Safe to restart; safe to load an older database.</li>
+          <li><strong>The file is the source of truth.</strong> <em>Download current</em> archives a snapshot; <em>Choose .db file</em> loads one back. Each swap keeps one rolling <code>logger.db.bak</code>.</li>
+          <li><strong>Dates live on the entry.</strong> A timer started at 1am attributed to &ldquo;yesterday&rdquo; writes <code>date = yesterday</code>; the aggregate rolls up under yesterday too.</li>
+          <li><strong>Plans and logged time are linked, not merged.</strong> <code>plan_item_id</code> is a nullable <code>SET NULL</code> foreign key &mdash; delete a plan and every session you logged against it keeps its minutes, it just stops pointing anywhere.</li>
+        </ul>
+        <p class="uth-source">Every table and column lives in <a href="https://github.com/KevinBian107/logger/blob/main/backend/logger/models.py" target="_blank" rel="noopener">models.py</a>.</p>
+      </section>
+
+      <!-- ── Reference ────────────────────────────────────── -->
+      <section class="doc-section" id="reference">
+        <h2>Reference</h2>
+        <p class="doc-lede">Settings, portability, and the honest limits of what&rsquo;s here today.</p>
+
+        <h3>Settings</h3>
+        <ul class="doc-list">
+          <li><strong>Theme</strong> &mdash; light, dark, or follow the system.</li>
+          <li><strong>Timezone</strong> &mdash; used to bucket timers into the right calendar day.</li>
+          <li><strong>Claude API key</strong> &mdash; required for chat and AI-generated project summaries; stored locally, never sent anywhere but Anthropic&rsquo;s API.</li>
+          <li><strong>Model</strong> &mdash; pick which Claude model answers chat queries.</li>
+        </ul>
+
+        <h3>Backing up</h3>
+        <p class="doc-muted"><strong>Download current</strong> saves the live database as a file; <strong>Choose .db file</strong> loads one back in. Dev mode and the packaged Mac app keep independent database files, so moving data between them is a manual download/load, on purpose &mdash; nothing crosses silently.</p>
+
+        <h3>Known limitations</h3>
+        <ul class="doc-list">
+          <li>Local only, for now &mdash; one machine, no mobile app, no sync between devices.</li>
+          <li>Chat and AI summaries need your own Claude API key; nothing else in the app does.</li>
+          <li>One session (academic term or work cycle) is active at a time.</li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+      <p class="footer-blurb">
+        A local-first time tracker: plan ahead, log as you go, and understand where it went.
+        Everything lives in one SQLite file on your machine &mdash; no cloud, no accounts,
+        nothing phones home.
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Built with</h4>
+      <ul>
+        <li>SvelteKit &amp; Svelte 5</li>
+        <li>FastAPI &amp; SQLAlchemy</li>
+        <li>SQLite</li>
+        <li>Claude API</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Links</h4>
+      <ul>
+        <li><a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">Source on GitHub</a></li>
+        <li><a href="index.html">Back to the overview</a></li>
+        <li><a href="https://github.com/KevinBian107/logger/blob/main/backend/logger/models.py" target="_blank" rel="noopener">models.py</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>MIT licensed.</span>
+    <span>
+      Built by <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>
+      and <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>.
+    </span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

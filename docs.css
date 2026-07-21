@@ -1,26 +1,12 @@
 /* ============================================================
-   log(ger) — Under the hood (database illustration only)
-   Loads AFTER style.css; reuses its tokens + keyframes.
+   log(ger) — Docs (database + schema illustrations)
+   Loads AFTER style.css; reuses its tokens + keyframes. The docs
+   page shell (sidebar, section spacing, doc-cards) lives in
+   style.css since it's general docs layout, not DB-specific.
    ============================================================ */
 
-/* ── Header ─────────────────────────────────────────────── */
-.uth-header {
-  padding: 4rem 0 1.5rem;
-  background:
-    radial-gradient(50rem 26rem at 50% -8rem, var(--accent-soft) 0%, transparent 60%),
-    linear-gradient(var(--bg), var(--bg));
-}
-.back-link { display: inline-flex; align-items: center; gap: .35rem; font-family: var(--font-mono); font-weight: 600; font-size: .9rem; color: var(--muted); margin-bottom: 1.4rem; }
-.back-link:hover { color: var(--accent-ink); text-decoration: none; }
-.back-link svg { width: 14px; height: 14px; }
-.back-link .dim { color: var(--accent); opacity: .55; }
-.uth-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.02em; }
-.uth-sub { color: var(--muted); max-width: 46rem; margin-top: .7rem; font-size: 1.05rem; }
-.uth-sub em { color: var(--text); font-style: normal; font-weight: 600; }
-.uth-path { margin-top: .9rem; font-size: .85rem; color: var(--muted); }
-
 /* ── Schema ─────────────────────────────────────────────── */
-.schema { margin-top: 2rem; padding: 1.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
+.schema { margin-top: 1.4rem; padding: 1.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
 .schema-chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: .6rem; }
 .sc-box {
   font-family: var(--font-mono); font-size: .82rem; font-weight: 600;
@@ -31,6 +17,7 @@
 .sc-box small { font-family: var(--font-sans); font-weight: 400; font-size: .68rem; color: var(--muted); }
 .sc-g { border-left: 3px solid #6366f1; } .sc-f { border-left: 3px solid #a855f7; }
 .sc-c { border-left: 3px solid #f59e0b; } .sc-e { border-left: 3px solid #10b981; }
+.sc-p { border-left: 3px solid #ec4899; }
 .sc-rel { align-self: center; font-family: var(--font-mono); font-size: .72rem; color: var(--muted); opacity: 0; }
 /* boxes sit at span positions 1,3,5,7; relations at 2,4,6 (nth-of-type counts all spans) */
 .schema.visible .sc-box { animation: pop .45s var(--viz-ease) forwards; }
@@ -44,7 +31,7 @@
 .schema-aux span { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: .25rem .55rem; }
 
 /* ── Watch a write land ─────────────────────────────────── */
-.db-flow { position: relative; margin-top: 2rem; padding: 1.6rem 1.4rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
+.db-flow { position: relative; margin-top: 1.6rem; padding: 1.6rem 1.4rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
 .db-replay {
   position: absolute; top: 1rem; right: 1rem;
   font-family: var(--font-mono); font-size: .74rem; font-weight: 600;
@@ -63,10 +50,8 @@
 .db-faint { opacity: .45; }
 .db-val { font-weight: 700; color: var(--text); }
 
-/* new row slides in */
 .db-new { background: rgba(16,185,129,.10); opacity: 0; transform: translateY(-8px); }
 .db-flow.visible .db-new { animation: drop .5s var(--viz-ease) forwards; }
-/* upsert + recompute rows flash when their counter runs */
 .db-up, .db-total { opacity: .45; }
 .db-flow.visible .db-up { animation: row-wake .5s var(--viz-ease) .7s forwards; }
 .db-flow.visible .db-total { animation: row-wake .5s var(--viz-ease) 1.4s forwards; }
@@ -78,16 +63,16 @@
 .db-caption em { color: var(--text); font-style: normal; font-weight: 600; }
 
 /* ── Properties ─────────────────────────────────────────── */
-.props { margin-top: 1.6rem; list-style: none; display: grid; gap: .9rem; }
+.props { margin-top: 1rem; list-style: none; display: grid; gap: .9rem; }
 .props li { padding-left: 1.2rem; position: relative; font-size: .96rem; color: var(--muted); }
 .props li::before { content: ""; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .props strong { color: var(--text); }
-.uth-source { margin-top: 1.6rem; font-size: .9rem; color: var(--muted); }
+.uth-source { margin-top: 1.2rem; font-size: .9rem; color: var(--muted); }
 
 /* ── Detailed schema cards ──────────────────────────────── */
 .k-pk, .k-fk { font-family: var(--font-mono); font-weight: 700; font-size: .85em; }
 .k-pk { color: var(--accent-ink); } .k-fk { color: #a855f7; }
-.tbl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .8rem; margin-top: 2rem; }
+.tbl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .8rem; margin-top: 1.4rem; }
 .tbl-card {
   border: 1px solid var(--border); border-left: 3px solid var(--border);
   border-radius: 10px; background: var(--bg); overflow: hidden;
@@ -100,22 +85,22 @@
 .tbl-card li.fk { color: #9333ea; }
 
 /* ── Operation cards ────────────────────────────────────── */
-.op-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+.op-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.4rem; }
 .op-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); padding: 1.1rem 1.1rem 1.2rem; transition: transform .2s var(--ease), box-shadow .2s; }
 .op-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-.op-card h3 { font-size: 1rem; font-weight: 650; margin-bottom: .6rem; }
+.op-card h3 { font-size: 1rem; font-weight: 650; margin-bottom: .6rem; margin-top: 0; }
 .op-tables { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .7rem; }
 .op-tables span { font-family: var(--font-mono); font-size: .66rem; font-weight: 600; color: var(--accent-ink); background: var(--accent-soft); border: 1px solid rgba(99,102,241,.22); border-radius: 6px; padding: .15rem .45rem; }
-.op-card p { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.op-card p { color: var(--muted); font-size: .9rem; line-height: 1.55; margin-top: 0; }
 .op-card em { color: var(--text); font-style: normal; font-weight: 600; }
 
 /* ── Read-back cards ────────────────────────────────────── */
-.read-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+.read-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.4rem; }
 .read-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); padding: 1.2rem; transition: transform .2s var(--ease), box-shadow .2s; }
 .read-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .read-ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 1.1rem; background: var(--accent-soft); color: var(--accent-ink); margin-bottom: .8rem; }
-.read-card h3 { font-size: 1rem; font-weight: 650; margin-bottom: .3rem; }
-.read-card p { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.read-card h3 { font-size: 1rem; font-weight: 650; margin-bottom: .3rem; margin-top: 0; }
+.read-card p { color: var(--muted); font-size: .9rem; line-height: 1.55; margin-top: 0; }
 
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 860px) {

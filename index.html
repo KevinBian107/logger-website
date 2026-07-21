@@ -3,27 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>log(ger) &mdash; Track time like you mean it.</title>
-  <meta name="description" content="A local-first time tracker: real-time timers, breaks, analytics that rescale with one control, and an AI that answers questions about your own time. No cloud, no accounts." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <title>log(ger) &mdash; Plan it, track it, understand it.</title>
+  <meta name="description" content="log(ger) is a free, local productivity app that closes the loop between planning and doing: block out your days, track time as you go, and let dashboards, streaks, and an AI you can ask turn every logged minute into a clear picture of how you actually spend your life. No subscriptions, no cloud." />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Anti-flash: apply the stored (or default dark) theme before first paint. -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('logger-theme') || 'dark';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-brand">
+      <img src="favicon.svg" alt="" width="26" height="26" />
+      <span class="wordmark">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#loop">How it works</a>
+      <a href="#analyze">Analyze</a>
+      <a href="#chat">Ask it</a>
+      <a href="docs.html">Docs</a>
+    </div>
+    <div class="nav-cta">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a class="nav-gh" href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener" aria-label="View source on GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="#get-it">Run it locally</a>
+    </div>
+  </div>
+</nav>
 
 <main>
 
   <!-- ── Hero ───────────────────────────────────────────── -->
   <header class="hero">
     <div class="container hero-inner">
-      <h1 class="reveal logo">log<span class="dim">(</span>ger<span class="dim">)</span></h1>
-      <p class="tagline reveal">Track time like you mean it.</p>
+      <h1 class="reveal h1-hero">
+        Stop living day by day.<br />
+        <span class="grad">Know exactly where your time goes.</span>
+      </h1>
       <p class="lede reveal">
-        A personal time tracker with real-time timers, analytics that rescale with one
-        control, and an AI that answers questions about your own time. Your data lives
-        on your machine &mdash; nowhere else.
+        Most people reach the end of a week without being able to say where it went. log(ger)
+        is a free, local productivity app that closes the loop between planning and doing:
+        block out your days, start the timer the moment you begin, and let dashboards,
+        streaks, and an AI you can ask turn every logged minute into a clear picture of how
+        you actually spend your time &mdash; not just a log of it.
       </p>
       <div class="cta-row reveal">
         <a class="btn btn-primary" href="#get-it">Run it locally</a>
@@ -31,7 +64,6 @@
           <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           Source
         </a>
-        <a class="btn" href="under-the-hood.html">Under the hood</a>
       </div>
       <p class="authors reveal">
         <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a> &middot;
@@ -79,182 +111,137 @@
   <section class="band">
     <div class="container narrow">
       <p class="intro reveal">
-        It started as three years of spreadsheets and a Jupyter notebook. log(ger) keeps the
-        idea &mdash; every minute is worth logging &mdash; and turns it into something you&rsquo;d
-        actually want to open: <strong>you hit start, do the work, hit stop</strong>, and the
-        dashboards, streaks, and answers all fall out of that one habit.
+        It started as three years of spreadsheets and a Jupyter notebook, trying to answer one
+        question: <strong>where does my time actually go?</strong> log(ger) is the answer &mdash;
+        a single app that plans your days, tracks them as you live them, and turns the result
+        into a picture of your own time you can actually see.
       </p>
     </div>
   </section>
 
-  <!-- ── Row 1 · Capture ────────────────────────────────── -->
-  <section class="band alt">
+  <!-- ── The loop: Plan → Track → Analyze ──────────────── -->
+  <section class="band alt" id="loop">
     <div class="container">
-      <div class="frow">
-        <div class="frow-media">
-          <div class="viz viz-timer reveal">
-            <div class="vt-row"><span class="vt-dot"></span><span class="vt-name">Salk Research</span><span class="vt-clock"><span class="counter" data-to="14" data-suffix="m">0m</span></span></div>
-            <div class="vt-row vt-row2"><span class="vt-dot"></span><span class="vt-name">Writing</span><span class="vt-clock">live</span></div>
-            <div class="vt-bar"><i></i></div>
-          </div>
-          <div class="viz viz-break reveal">
-            <div class="vb-week">
-              <span class="vb-day on"></span><span class="vb-day on"></span>
-              <span class="vb-day rest">🌴</span><span class="vb-day rest">🌴</span>
-              <span class="vb-day on"></span><span class="vb-day on"></span><span class="vb-day on"></span>
-            </div>
-            <div class="vb-bridge"></div>
-            <div class="vb-flag">🔥 streak kept</div>
-          </div>
+      <div class="loop-head">
+        <span class="kicker">How it works</span>
+        <h2>One app, one continuous loop.</h2>
+        <p class="section-lede">
+          Most tools make you pick a side &mdash; a planner that never learns what you actually
+          did, or a tracker that never asked what you meant to do. log(ger) is both, at once.
+        </p>
+      </div>
+      <div class="loop-steps reveal">
+        <div class="loop-step">
+          <div class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5"/></svg></div>
+          <h3>Plan</h3>
+          <p>Drag across a day &mdash; or a week &mdash; on the planner&rsquo;s timeline to block out what you mean to work on, and flag what actually matters with a priority.</p>
         </div>
-        <div class="frow-text reveal">
-          <span class="kicker">Capture</span>
-          <h3>Start, work, stop.</h3>
-          <p>
-            Hit play on a category and the clock runs &mdash; pause for a coffee, resume, stop when
-            you&rsquo;re done. Run a few timers at once, and everything rounds to the honest minute.
-            Forgot to start one? A <strong>manual entry</strong> backfills the time after the fact.
-            And when you take a day off, mark it a <strong>break</strong>: it logs nothing, yet your
-            streak bridges right over it.
-          </p>
+        <div class="loop-arrow">&rarr;</div>
+        <div class="loop-step">
+          <div class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg></div>
+          <h3>Track</h3>
+          <p>Start the timer right from the plan, run a few at once, or backfill with a manual entry after the fact. Either way, it stays linked to what you meant to do.</p>
+        </div>
+        <div class="loop-arrow">&rarr;</div>
+        <div class="loop-step">
+          <div class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <h3>Analyze</h3>
+          <p>Every logged minute rolls into dashboards, streaks, and an AI you can ask &mdash; so you see the shape of your time, not just a list of entries.</p>
+        </div>
+      </div>
+      <p class="loop-tail">And it feeds back: what you actually did is right there the next time you plan. <strong>No re-typing what you already decided.</strong></p>
+    </div>
+  </section>
+
+  <!-- ── Analyze deep-dive: the heatmap ────────────────── -->
+  <section class="band" id="analyze">
+    <div class="container">
+      <span class="kicker">Analyze</span>
+      <h2 class="reveal">See a year of your life, at a glance.</h2>
+      <p class="section-lede reveal">
+        Every day you log becomes one cell. Flip between overall, year, month, and week and
+        every chart on the dashboard re-fits to match &mdash; but the pattern is the point:
+        streaks, ruts, and the weeks that quietly disappeared.
+      </p>
+      <div class="big-viz reveal">
+        <div class="heatmap-months">
+          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+          <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+        </div>
+        <div class="heatmap-wrap">
+          <div class="heatmap-days"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span></span></div>
+          <div class="heatmap-grid" data-heatmap aria-label="A year of logged time, one cell per day"></div>
+        </div>
+        <div class="heatmap-foot">
+          <div class="heatmap-callouts">
+            <span class="heatmap-callout">🔥 47-day streak in the spring</span>
+            <span class="heatmap-callout">🌴 two weeks off in August, streak bridged</span>
+          </div>
+          <div class="heatmap-legend">Less <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> More</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Row 2 · Review ─────────────────────────────────── -->
+  <!-- ── Chat deep-dive ─────────────────────────────────── -->
+  <section class="band alt" id="chat">
+    <div class="container">
+      <span class="kicker">Ask it</span>
+      <h2 class="reveal">Charts not enough? Just ask.</h2>
+      <p class="section-lede reveal">
+        An assistant tied to <strong>Claude</strong> reads your own sessions and answers in
+        plain language &mdash; grounded in what you actually logged, never a guess. Every query
+        it runs against your data is gated behind a one-tap approval, so nothing runs without
+        you seeing it first.
+      </p>
+      <div class="big-viz reveal">
+        <div class="chat-mock-msgs">
+          <div class="cm-msg cm-user">How does my research time this quarter compare to last?</div>
+          <div class="cm-approve">
+            <span class="cm-approve-ic">🔒</span>
+            <div><strong>Approve to run</strong><span>2 queries &middot; sessions by category, prior quarter</span></div>
+            <span class="cm-approve-btn">Approve</span>
+          </div>
+          <div class="cm-ai">
+            <p>You logged <strong>142h 30m</strong> on Research this quarter, up <strong>18%</strong> from 120h 45m last quarter &mdash; almost all of the gain is in <em>Salk</em>.</p>
+            <div class="cm-bars">
+              <div class="cm-bar-row"><span>This quarter</span><div class="cm-bar"><i style="width:82%"></i></div><span>142h</span></div>
+              <div class="cm-bar-row"><span>Last quarter</span><div class="cm-bar"><i style="width:68%; opacity:.5"></i></div><span>120h</span></div>
+            </div>
+            <div class="cm-cites"><span>Winter 2026</span><span>Spring 2026</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What makes it different ────────────────────────── -->
   <section class="band">
     <div class="container">
-      <div class="frow reverse">
-        <div class="frow-media">
-          <div class="viz viz-line reveal">
-            <div class="vl-axis"></div>
-            <span class="vl-block vl-b1"></span>
-            <span class="vl-block vl-b2"></span>
-            <span class="vl-block vl-b3"></span>
-          </div>
-          <div class="viz viz-streak reveal">
-            <div class="vs-dots">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="vs-count">🔥 <span class="counter" data-to="14" data-suffix="d">0d</span></div>
-          </div>
+      <span class="kicker">Why log(ger)</span>
+      <h2 class="reveal">Not another timer. Not another planner.</h2>
+      <div class="diff-grid reveal">
+        <div class="diff-card">
+          <div class="diff-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <h3>Plan and track, in one place</h3>
+          <p>Most apps make you choose. Here the plan you made and the time you actually logged are the same data, linked from the start.</p>
         </div>
-        <div class="frow-text reveal">
-          <span class="kicker">Review</span>
-          <h3>Replay any day.</h3>
-          <p>
-            Every entry lands as a colored block across the day, start to end. Scrub back to any
-            past date and the whole dashboard <strong>rewinds with it</strong> &mdash; and stays
-            there as you move between pages. Down the side, a <strong>streak</strong> counts the
-            days you showed up, quietly stepping over the breaks you planned.
-          </p>
+        <div class="diff-card">
+          <div class="diff-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15C7.5 4.5 4.5 6 4.5 9s3 4.5 7.5 4.5 7.5 1.5 7.5 4.5-3 4.5-7.5 4.5"/></svg></div>
+          <h3>Free, and local by default</h3>
+          <p>No subscription, no account, no server. Everything lives in one file on your own machine &mdash; that was true on day one, not bolted on later.</p>
+        </div>
+        <div class="diff-card">
+          <div class="diff-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <h3>Every AI call, approved by you</h3>
+          <p>The chat is genuinely useful because it can read your data &mdash; and genuinely safe because nothing runs until you tap approve.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Row 3 · Analyze ────────────────────────────────── -->
-  <section class="band alt">
-    <div class="container">
-      <div class="frow">
-        <div class="frow-media">
-          <div class="viz viz-scale reveal">
-            <div class="vsc-seg">
-              <span>Overall</span><span>Year</span><span>Month</span><span class="on">Week</span>
-              <i class="vsc-pill"></i>
-            </div>
-            <div class="vsc-bars"><i></i><i></i><i></i><i></i><i></i></div>
-          </div>
-          <div class="viz viz-heat reveal">
-            <div class="vh-grid">
-              <i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l1"></i><i class="l3"></i>
-              <i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l1"></i>
-              <i class="l3"></i><i class="l2"></i><i class="l1"></i><i class="l4"></i><i class="l3"></i><i class="l2"></i><i class="l4"></i>
-            </div>
-          </div>
-        </div>
-        <div class="frow-text reveal">
-          <span class="kicker">Analyze</span>
-          <h3>One control, every scale.</h3>
-          <p>
-            Flip a single control between <strong>overall, year, month, and week</strong> and every
-            chart re-fits to match. A weekly heatmap shows the rhythm of your effort at a glance,
-            and you can stack whole quarters side by side &mdash; by group &mdash; to see where each
-            one actually went.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Row 4 · Organize ───────────────────────────────── -->
-  <section class="band">
-    <div class="container">
-      <div class="frow reverse">
-        <div class="frow-media">
-          <div class="viz viz-tree reveal">
-            <span class="vtr g">Research</span>
-            <div class="vtr-row"><span class="vtr f">Salk</span><span class="vtr f">MPI</span><span class="vtr f">SWL</span></div>
-            <div class="vtr-row"><span class="vtr c">Salk · S26</span><span class="vtr c">MPI · Su24</span></div>
-          </div>
-          <div class="viz viz-match reveal">
-            <span class="vmt-loose">Salk · Fall 2026</span>
-            <span class="vmt-arrow">→</span>
-            <span class="vmt-bucket">Salk family</span>
-          </div>
-        </div>
-        <div class="frow-text reveal">
-          <span class="kicker">Organize</span>
-          <h3>Filed the way you think.</h3>
-          <p>
-            Flat tags collapse over a year. log(ger) uses three levels instead &mdash; a
-            <strong>group</strong> (the kind of work), a <strong>family</strong> (the thread that
-            runs through it), and a <strong>category</strong> (one session&rsquo;s slice). New
-            categories file themselves: on import they snap to the right family by exact or prefix
-            rules, so you never sort by hand.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Row 5 · Explore & ask ──────────────────────────── -->
-  <section class="band alt">
-    <div class="container">
-      <div class="frow">
-        <div class="frow-media">
-          <div class="viz viz-chat reveal">
-            <div class="vch-q">How much research this quarter?</div>
-            <div class="vch-ok">Approve ✓</div>
-            <div class="vch-a"><strong>52h 15m</strong> — 41% Salk.</div>
-          </div>
-          <div class="viz viz-bubbles reveal">
-            <span class="vbb b1">Salk</span>
-            <span class="vbb b2">MPI</span>
-            <span class="vbb b3">COGS</span>
-            <span class="vbb b4">PP</span>
-            <span class="vbb b5">SWL</span>
-          </div>
-        </div>
-        <div class="frow-text reveal">
-          <span class="kicker">Explore &amp; ask</span>
-          <h3>See it, then just ask.</h3>
-          <p>
-            A bubble map shows your projects breathing across sessions &mdash; the biggest circles
-            the things you gave the most to. When charts aren&rsquo;t enough, ask in plain language:
-            an assistant tied to <strong>Claude</strong> reads your sessions and answers, with every
-            call gated behind a one-tap approval. Link a GitHub repo and your summaries even pull in
-            real commit context.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Row 6 · Own it ─────────────────────────────────── -->
-  <section class="band">
+  <!-- ── Own it ─────────────────────────────────────────── -->
+  <section class="band alt" id="own-it">
     <div class="container">
       <div class="frow reverse">
         <div class="frow-media">
@@ -271,14 +258,13 @@
           <span class="kicker">Own it</span>
           <h3>All of it, on one file.</h3>
           <p>
-            Everything lives in a single SQLite file on your machine &mdash; no cloud, no accounts.
-            Bring years of history in by dropping a <strong>CSV pair</strong> onto the import page;
-            it fans out across six tables in one transaction, messy headers and all. Download a
-            snapshot whenever you want, or load one back.
+            Everything lives in a single SQLite file on your machine. Bring years of history in
+            by dropping a <strong>CSV pair</strong> onto the import page, or download a snapshot
+            whenever you want and load it back later &mdash; the file is the whole app.
           </p>
           <p class="band-tail">
-            Curious how that file changes as you work?
-            <a href="under-the-hood.html">Go under the hood &rarr;</a>
+            Curious exactly how it&rsquo;s all organized?
+            <a href="docs.html">Read the docs &rarr;</a>
           </p>
         </div>
       </div>
@@ -286,7 +272,7 @@
   </section>
 
   <!-- ── Get it ─────────────────────────────────────────── -->
-  <section class="band alt" id="get-it">
+  <section class="band" id="get-it">
     <div class="container narrow">
       <h2 class="reveal">Run it locally</h2>
       <p class="section-lede reveal">
@@ -311,14 +297,40 @@ open dist/Logger.app</code></pre>
 </main>
 
 <footer>
-  <div class="container footer-inner">
-    <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
-    <p>
-      MIT licensed. Built by
-      <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>
-      and <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>
-      with <a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Propel</a>.
-    </p>
+  <div class="container footer-grid">
+    <div>
+      <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+      <p class="footer-blurb">
+        A local-first time tracker: plan ahead, log as you go, and understand where it went.
+        Everything lives in one SQLite file on your machine &mdash; no cloud, no accounts,
+        nothing phones home. Grew out of three years of spreadsheets and a Jupyter notebook.
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Built with</h4>
+      <ul>
+        <li>SvelteKit &amp; Svelte 5</li>
+        <li>FastAPI &amp; SQLAlchemy</li>
+        <li>SQLite</li>
+        <li>Claude API</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Links</h4>
+      <ul>
+        <li><a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">Source on GitHub</a></li>
+        <li><a href="docs.html">Documentation</a></li>
+        <li><a href="https://github.com/KevinBian107/Chatable-Study-Database" target="_blank" rel="noopener">The original notebook</a></li>
+        <li><a href="https://kevinbian107.github.io/propel-website/" target="_blank" rel="noopener">Built with Propel</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>MIT licensed.</span>
+    <span>
+      Built by <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>
+      and <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>.
+    </span>
   </div>
 </footer>
 

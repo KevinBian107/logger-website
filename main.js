@@ -1,6 +1,40 @@
 // ── log(ger) landing — restrained, one-shot motion ──
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// ── Year heatmap illustration (Analyze section) ──
+// Deterministic, not random: a slow ramp-up (adopting the habit), two
+// deliberate gap bands (breaks — bridged, not reset), weekday > weekend
+// intensity, and a wavy cadence so it reads as lived-in rather than uniform.
+document.querySelectorAll("[data-heatmap]").forEach((grid) => {
+  const WEEKS = 52, DAYS = 7;
+  const cells = [];
+  for (let w = 0; w < WEEKS; w++) {
+    for (let d = 0; d < DAYS; d++) {
+      const ramp = Math.min(1, w / 6);
+      const onBreak = (w >= 30 && w <= 31) || w === 47;
+      const weekday = d < 5;
+      let level = 0;
+      if (!onBreak) {
+        const wave = 0.5 + 0.5 * Math.sin(w * 0.33 + d * 0.6);
+        const base = weekday ? 1 + wave * 3 : wave * 1.5;
+        level = Math.round(ramp * base);
+      }
+      cells.push(Math.max(0, Math.min(4, level)));
+    }
+  }
+  grid.innerHTML = cells.map((l) => `<i class="l${l}"></i>`).join("");
+});
+
+// ── Theme toggle (dark by default — see the anti-flash inline script in <head>) ──
+document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const root = document.documentElement;
+    const next = root.classList.contains("dark") ? "light" : "dark";
+    root.classList.toggle("dark", next === "dark");
+    localStorage.setItem("logger-theme", next);
+  });
+});
+
 // Stagger reveals within each shared parent (hero, grid, hierarchy…).
 document.querySelectorAll(".reveal").forEach((el) => {
   const sibs = [...el.parentElement.children].filter((c) => c.classList.contains("reveal"));
@@ -50,7 +84,7 @@ document.querySelectorAll("[data-replay]").forEach((btn) => {
   });
 });
 
-// ── Table of Contents active-link tracking (under-the-hood page) ──
+// ── Table of Contents active-link tracking (docs page sidebar) ──
 const tocLinks = document.querySelectorAll("[data-toc-link]");
 if (tocLinks.length) {
   const sections = [];
