@@ -512,6 +512,18 @@ code {
 .doc-note-ic { flex-shrink: 0; font-size: 1rem; }
 .doc-note p { margin: 0; font-size: .87rem; color: var(--text); }
 
+/* Walkthrough page: numbered steps, each with framed real screenshots/clips */
+.wt-content { max-width: 40rem; }
+.wt-step .wt-num { display: block; font-family: var(--font-mono); font-size: .8rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); }
+.wt-step h2 { margin-top: .3rem; }
+.wt-frame { margin: 1.6rem 0 0; max-width: 100%; }
+.wt-frame + .wt-caption { margin-top: .7rem; }
+.wt-media { display: block; width: 100%; height: auto; background: var(--bg-soft); }
+.wt-caption { font-size: .85rem; line-height: 1.6; color: var(--muted); text-align: center; padding: 0 1rem; }
+.wt-caption + .wt-frame { margin-top: 2.2rem; }
+.band-tail { margin-top: 2.6rem !important; padding-top: 1.6rem; border-top: 1px solid var(--border); font-size: 1rem !important; color: var(--muted); }
+.band-tail a { color: var(--accent-ink); font-weight: 600; }
+
 @media (max-width: 860px) {
   .docs-shell { flex-direction: column; gap: 1.5rem; }
   .docs-sidebar { position: static; width: 100%; flex-direction: row; overflow-x: auto; }

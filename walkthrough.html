@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>log(ger) &mdash; Walkthrough</title>
+  <meta name="description" content="A real walkthrough of log(ger), start to finish: plan a task, start it, watch it land on the dashboard, see it in the analytics, and ask about it — real screenshots and clips of the actual app, not mockups." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('logger-theme') || 'dark';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-brand">
+      <img src="favicon.svg" alt="" width="26" height="26" />
+      <span class="wordmark">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#loop">How it works</a>
+      <a href="index.html#analyze">Analyze</a>
+      <a href="index.html#chat">Ask it</a>
+      <a href="walkthrough.html">Walkthrough</a>
+      <a href="docs.html">Docs</a>
+    </div>
+    <div class="nav-cta">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a class="nav-gh" href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener" aria-label="View source on GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="index.html#get-it">Run it locally</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container docs-header">
+    <a href="docs.html" class="back-link reveal">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.5 3.5L7 8l4.5 4.5-1 1L5 8l5.5-5.5z"/></svg>
+      Back to docs
+    </a>
+    <h1>Walkthrough</h1>
+    <p>Every screenshot and clip below is the real app, running against a seeded demo
+      session &mdash; not redrawn mockups. This is exactly what plan &rarr; track &rarr;
+      analyze &rarr; ask looks like end to end, including one real, live exchange with
+      the chat.</p>
+  </div>
+
+  <div class="container docs-shell">
+    <aside class="docs-sidebar">
+      <div>
+        <div class="docs-nav-label">Walkthrough</div>
+        <nav class="docs-nav">
+          <a href="#step-plan" data-toc-link>1 &middot; Plan</a>
+          <a href="#step-track" data-toc-link>2 &middot; Track</a>
+          <a href="#step-close" data-toc-link>3 &middot; Close the loop</a>
+          <a href="#step-analyze" data-toc-link>4 &middot; Analyze</a>
+          <a href="#step-ask" data-toc-link>5 &middot; Ask</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="docs-content wt-content">
+
+      <!-- ── 1. Plan ─────────────────────────────────────── -->
+      <section class="doc-section wt-step" id="step-plan">
+        <span class="wt-num">01</span>
+        <h2>Plan</h2>
+        <p class="doc-lede">It starts on the planner&rsquo;s timeline &mdash; drag across the days you mean to work on something.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Drag to create</span></div>
+          <video class="wt-media" autoplay muted loop playsinline>
+            <source src="assets/walkthrough/clip-plan-create.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <p class="wt-caption">A drag across a few days opens a quick-create popover &mdash; title, category, done.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">The plan, opened</span></div>
+          <img class="wt-media" src="assets/walkthrough/03-plan-priority.png" alt="An open plan item panel showing title, category, dates, and a High priority set" />
+        </div>
+        <p class="wt-caption">Click it to open the full panel &mdash; category, dates, and notes, all editable in place. Set a priority and it shows up as a small flag right on the timeline bar.</p>
+      </section>
+
+      <!-- ── 2. Track ────────────────────────────────────── -->
+      <section class="doc-section wt-step" id="step-track">
+        <span class="wt-num">02</span>
+        <h2>Track</h2>
+        <p class="doc-lede">When the day comes, start it right from the plan &mdash; no re-typing what you already decided.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Started, linked</span></div>
+          <video class="wt-media" autoplay muted loop playsinline>
+            <source src="assets/walkthrough/clip-timer-ticking.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <p class="wt-caption">The timer runs right inside the plan panel, linked back to it from the moment it starts &mdash; a real, live timer, pause and resume whenever.</p>
+      </section>
+
+      <!-- ── 3. Close the loop (Recorder) ───────────────────── -->
+      <section class="doc-section wt-step" id="step-close">
+        <span class="wt-num">03</span>
+        <h2>Close the loop</h2>
+        <p class="doc-lede">The same timer shows up on the Recorder dashboard too &mdash; it&rsquo;s one piece of state, not two apps pretending to sync.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">log(ger) — Spring 2026</span></div>
+          <img class="wt-media" src="assets/walkthrough/05-recorder-active.png" alt="The dashboard showing the same active timer, plus the current streak" />
+        </div>
+        <p class="wt-caption">Same timer, same second, on the dashboard &mdash; note the streak, already at 52 days from the seeded history.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Stop Timer</span></div>
+          <img class="wt-media" src="assets/walkthrough/06-recorder-stop-dialog.png" alt="The stop dialog, showing it is fulfilling a plan, with a Mark plan complete checkbox" />
+        </div>
+        <p class="wt-caption">Stopping it shows exactly which plan it&rsquo;s closing out &mdash; completing the plan is still your call, not automatic.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">log(ger) — Spring 2026</span></div>
+          <img class="wt-media" src="assets/walkthrough/07-recorder-after.png" alt="The dashboard after stopping, with today's total, entry, and a longer streak" />
+        </div>
+        <p class="wt-caption">Today&rsquo;s total, the entry, and the streak all update together &mdash; one write, everywhere it matters.</p>
+      </section>
+
+      <!-- ── 4. Analyze ──────────────────────────────────── -->
+      <section class="doc-section wt-step" id="step-analyze">
+        <span class="wt-num">04</span>
+        <h2>Analyze</h2>
+        <p class="doc-lede">Eight weeks of seeded history, rolled up into the real dashboard &mdash; the same charts documented in <a href="docs.html#analyzing">Analyzing</a>.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Analytics</span></div>
+          <img class="wt-media" src="assets/walkthrough/08-analytics-overview.png" alt="The analytics page showing a stacked area chart, category breakdown, and a real activity heatmap" />
+        </div>
+        <p class="wt-caption">80h 37m across 53 days &mdash; the stacked chart, the category split, and a real activity heatmap, all from data that actually got logged.</p>
+      </section>
+
+      <!-- ── 5. Ask ──────────────────────────────────────── -->
+      <section class="doc-section wt-step" id="step-ask">
+        <span class="wt-num">05</span>
+        <h2>Ask</h2>
+        <p class="doc-lede">One real exchange with the chat &mdash; not a staged answer. Every tool call it makes against your data is visible, and nothing runs before you approve it.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Send this to Claude?</span></div>
+          <img class="wt-media" src="assets/walkthrough/09-chat-approval.png" alt="The approval gate before Claude is allowed to query the database" />
+        </div>
+        <p class="wt-caption">Asking &ldquo;How much time have I spent on Research this month?&rdquo; stops here first &mdash; eight read-only tools, nothing runs until you approve.</p>
+
+        <div class="mock wt-frame">
+          <div class="mock-chrome"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-title">Claude Sonnet 5</span></div>
+          <img class="wt-media" src="assets/walkthrough/10-chat-answer.png" alt="Claude's real answer, grounded in the actual seeded data, with the tool calls it made shown below" />
+        </div>
+        <p class="wt-caption">The real answer &mdash; grounded in the actual numbers, with every query it ran shown right below.</p>
+
+        <p class="band-tail">That&rsquo;s the whole loop. <a href="index.html#get-it">Run it locally</a> to try it on your own time.</p>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <span class="footer-logo">log<span class="dim">(</span>ger<span class="dim">)</span></span>
+      <p class="footer-blurb">
+        A local-first time tracker: plan ahead, log as you go, and understand where it went.
+        Everything lives in one SQLite file on your machine &mdash; no cloud, no accounts,
+        nothing phones home.
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Built with</h4>
+      <ul>
+        <li>SvelteKit &amp; Svelte 5</li>
+        <li>FastAPI &amp; SQLAlchemy</li>
+        <li>SQLite</li>
+        <li>Claude API</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Links</h4>
+      <ul>
+        <li><a href="https://github.com/KevinBian107/logger" target="_blank" rel="noopener">Source on GitHub</a></li>
+        <li><a href="docs.html">Documentation</a></li>
+        <li><a href="index.html">Back to the overview</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>MIT licensed.</span>
+    <span>
+      Built by <a href="https://kbian.org" target="_blank" rel="noopener">Kaiwen Bian</a>
+      and <a href="https://yuertang.dev/" target="_blank" rel="noopener">Yuer Tang</a>.
+    </span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
